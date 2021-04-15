@@ -824,7 +824,7 @@ def test_linear_single_axis_curve_tangent_vector() -> None:
 def test_quadratic_single_axis_curve_tangent_vector() -> None:
     """Test that a curve that varies quadratically over a single axis
     over the entire range of the parameter (which is defined for all
-    reals) has the correct radius.
+    reals) has the correct tangent vector.
     """
 
     acceleration = [1.0, 0.0, 0.0]
@@ -914,7 +914,7 @@ def test_linear_off_axis_curve_tangent_vector() -> None:
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
-            curve.radius_at(parameter),
+            curve.tangent_vector(parameter),
             # calculated as velocity / sqrt(dot(velocity, velocity))
             np.array([0.36185897, -0.60909181, 0.70573738]),
         ), (
@@ -1061,6 +1061,10 @@ def test_linear_single_axis_curve_normal_vector() -> None:
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
+        # since this is a straight line, perpendicular to tangent is as
+        # good a test as we can get.  It'd be good to come up with a
+        # reasonable convention for what the normal vector should be so
+        # that it can be stable.
         assert (
             np.dot(
                 curve.tangent_vector(parameter), curve.normal_vector(parameter)
@@ -1068,14 +1072,14 @@ def test_linear_single_axis_curve_normal_vector() -> None:
             == 0.0
         ), (
             "Fails to say that the normal vector of a straight line is "
-            "along that straight line."
+            "perpendicular to the tangent vector at that point."
         )
 
 
 def test_quadratic_single_axis_curve_normal_vector() -> None:
     """Test that a curve that varies quadratically over a single axis
     over the entire range of the parameter (which is defined for all
-    reals) has the correct radius.
+    reals) has the correct normal vector.
     """
 
     acceleration = [1.0, 0.0, 0.0]
@@ -1099,9 +1103,20 @@ def test_quadratic_single_axis_curve_normal_vector() -> None:
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
-        assert np.array_equal(
-            curve.normal_vector(parameter), acceleration
-        ), "Fails to say that the normal vector of a curve with "
+        # since this is a straight line, perpendicular to tangent is as
+        # good a test as we can get.  It'd be good to come up with a
+        # reasonable convention for what the normal vector should be so
+        # that it can be stable.
+        assert (
+            np.dot(
+                curve.tangent_vector(parameter), curve.normal_vector(parameter)
+            )
+            == 0.0
+        ), (
+            "Fails to say that the normal vector of a straight-line "
+            "curve with constantly accelerating parameter is "
+            "perpendicular to the tangent vector"
+        )
 
 
 def test_constant_not_origin_curve_normal_vector() -> None:
@@ -1130,7 +1145,9 @@ def test_constant_not_origin_curve_normal_vector() -> None:
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
-        assert np.is_equal(curve.normal_vector(parameter), [0.0, 0.0, 0.0]), (
+        assert np.array_equal(
+            curve.normal_vector(parameter), [0.0, 0.0, 0.0]
+        ), (
             "Fails to say that the normal vector of a constant curve "
             "not on the origin defined over all real parameters is "
             "equal to [0, 0, 0]."
@@ -1164,14 +1181,19 @@ def test_linear_off_axis_curve_normal_vector() -> None:
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
-        assert np.array_equal(
-            curve.radius_at(parameter),
-            # calculated as velocity / sqrt(dot(velocity, velocity))
-            np.array([0.36185897, -0.60909181, 0.70573738]),
+        # since this is a straight line, perpendicular to tangent is as
+        # good a test as we can get.  It'd be good to come up with a
+        # reasonable convention for what the normal vector should be so
+        # that it can be stable.
+        assert (
+            np.dot(
+                curve.tangent_vector(parameter), curve.normal_vector(parameter)
+            )
+            == 0.0
         ), (
             "Fails to say that the normal vector of a linear curve "
-            "defined over all real parameters is equal to "
-            "[0.36185897, -0.60909181, 0.70573738]."
+            "defined over all real parameters is perpendicular to the "
+            "tangent vector."
         )
 
 
@@ -1202,17 +1224,19 @@ def test_quadratic_off_axis_curve_normal_vector() -> None:
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
-        assert np.array_equal(
-            curve.normal_vector(parameter),
-            # calculated as
-            # parameter * acceleration
-            # / sqrt(dot(parameter * acceleration, parameter * acceleration))
-            np.array([0.36185897, -0.60909181, 0.70573738]),
+        # since this is a straight line, perpendicular to tangent is as
+        # good a test as we can get.  It'd be good to come up with a
+        # reasonable convention for what the normal vector should be so
+        # that it can be stable.
+        assert (
+            np.dot(
+                curve.tangent_vector(parameter), curve.normal_vector(parameter)
+            )
+            == 0.0
         ), (
             "Fails to say that the normal vector of a "
             "constant-acceleration curve defined over all real "
-            "parameters is equal to "
-            "[0.36185897, -0.60909181, 0.70573738]."
+            "parameters is perpendicular to the tangent vector."
         )
 
 
@@ -1238,11 +1262,321 @@ def test_non_linear_curve_normal_vector() -> None:
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
+        normal_vector = np.array([-np.cos(t), -np.sin(t), 0.0])
         assert np.array_equal(
             curve.normal_vector(parameter),
-            np.sqrt(0.5) * curve_first_derivative(parameter),
+            normal_vector,
         ), (
             "Fails to say that the a non-linear curve defined over all "
-            "real parameters has the correct normal vector at parameter "
-            f"{parameter}."
+            "real parameters has the correct normal vector of "
+            f"{normal_vector} at parameter {parameter}."
+        )
+
+
+# binormal vector
+
+
+def test_constant_curve_binormal_vector() -> None:
+    """Tests that a curve whose value is constant over the entire range
+    of the parameter (which is defined for all reals) has binormal of
+    [0, 0, 0].
+    """
+    position = [0.0, 0.0, 0.0]
+
+    def constant_curve_radius(parameter: float) -> npt.ArrayLike:
+        """Constant curve at the origin."""
+        return np.array(position)
+
+    def constant_curve_first_derivative(parameter: float) -> npt.ArrayLike:
+        """Derivative of a constant curve."""
+        return np.array([0.0, 0.0, 0.0])
+
+    def constant_curve_second_derivative(parameter: float) -> npt.ArrayLike:
+        """Second derivative of a constant curve."""
+        return np.array([0.0, 0.0, 0.0])
+
+    curve = AnalyticCurve(
+        constant_curve_radius,
+        constant_curve_first_derivative,
+        constant_curve_second_derivative,
+    )
+
+    for parameter in np.linspace(-10.0, 10.0, num=41):
+        assert np.array_equal(
+            curve.binormal_vector(parameter), [0.0, 0.0, 0.0]
+        ), (
+            "Fails to say that a constant curve defined over all real "
+            f"parameters has binormal vector of [0, 0, 0]."
+        )
+
+
+def test_linear_single_axis_curve_binormal_vector() -> None:
+    """Test that a curve that varies linearly over a single axis over
+    the entire range of the parameter (which is defined for all reals)
+    has the correct binormal vector.
+    """
+
+    velocity = [1.0, 0.0, 0.0]
+
+    def linear_curve_radius(parameter: float) -> npt.ArrayLike:
+        """Linear curve."""
+        return parameter * np.array(velocity)
+
+    def linear_curve_first_derivative(parameter: float) -> npt.ArrayLike:
+        """Derivative of a linear curve."""
+        return np.array(velocity)
+
+    def linear_curve_second_derivative(parameter: float) -> npt.ArrayLike:
+        """Second derivative of a linear curve."""
+        return np.array([0.0, 0.0, 0.0])
+
+    curve = AnalyticCurve(
+        linear_curve_radius,
+        linear_curve_first_derivative,
+        linear_curve_second_derivative,
+    )
+
+    for parameter in np.linspace(-10.0, 10.0, num=41):
+        # since this is a straight line, perpendicular to tangent and
+        # normal is as good a test as we can get.  It'd be good to come
+        # up with a reasonable convention for what the binormal vector
+        # should be so that it can be stable.
+        assert (
+            np.dot(
+                curve.tangent_vector(parameter),
+                curve.binormal_vector(parameter),
+            )
+            == 0.0
+        ) and (
+            np.dot(
+                curve.normal_vector(parameter),
+                curve.binormal_vector(parameter),
+            )
+            == 0.0
+        ), (
+            "Fails to say that the binormal vector of a straight line is "
+            "perpendicular to both the tangent and normal vector at "
+            "that point."
+        )
+
+
+def test_quadratic_single_axis_curve_binormal_vector() -> None:
+    """Test that a curve that varies quadratically over a single axis
+    over the entire range of the parameter (which is defined for all
+    reals) has the correct binormal vector.
+    """
+
+    acceleration = [1.0, 0.0, 0.0]
+
+    def quadratic_curve_radius(parameter: float) -> npt.ArrayLike:
+        """Linear curve."""
+        return 0.5 * parameter * np.array(acceleration)
+
+    def quadratic_curve_first_derivative(parameter: float) -> npt.ArrayLike:
+        """Derivative of a quadratic curve."""
+        return parameter * np.array(acceleration)
+
+    def quadratic_curve_second_derivative(parameter: float) -> npt.ArrayLike:
+        """Second derivative of a quadratic curve."""
+        return np.array(acceleration)
+
+    curve = AnalyticCurve(
+        quadratic_curve_radius,
+        quadratic_curve_first_derivative,
+        quadratic_curve_second_derivative,
+    )
+
+    for parameter in np.linspace(-10.0, 10.0, num=41):
+        # since this is a straight line, perpendicular to tangent and
+        # normal is as good a test as we can get.  It'd be good to come
+        # up with a reasonable convention for what the binormal vector
+        # should be so that it can be stable.
+        assert (
+            np.dot(
+                curve.tangent_vector(parameter),
+                curve.binormal_vector(parameter),
+            )
+            == 0.0
+        ) and (
+            np.dot(
+                curve.normal_vector(parameter),
+                curve.binormal_vector(parameter),
+            )
+            == 0.0
+        ), (
+            "Fails to say that the binormal vector of a straight-line "
+            "curve with constantly accelerating parameter is "
+            "perpendicular to both the tangent vector and the normal "
+            "vector."
+        )
+
+
+def test_constant_not_origin_curve_binormal_vector() -> None:
+    """Tests that a curve whose value is constant over the entire range
+    of the parameter (which is defined for all reals) has binormal vector
+    of [0, 0, 0].
+    """
+    position = [1.61, -2.71, 3.14]
+
+    def constant_curve_radius(parameter: float) -> npt.ArrayLike:
+        """Constant curve not at the origin."""
+        return np.array(position)
+
+    def constant_curve_first_derivative(parameter: float) -> npt.ArrayLike:
+        """First derivative of a constant curve."""
+        return np.array([0.0, 0.0, 0.0])
+
+    def constant_curve_second_derivative(parameter: float) -> npt.ArrayLike:
+        """Second derivative of a constant curve."""
+        return np.array([0.0, 0.0, 0.0])
+
+    curve = AnalyticCurve(
+        constant_curve_radius,
+        constant_curve_first_derivative,
+        constant_curve_second_derivative,
+    )
+
+    for parameter in np.linspace(-10.0, 10.0, num=41):
+        assert np.array_equal(
+            curve.binormal_vector(parameter), [0.0, 0.0, 0.0]
+        ), (
+            "Fails to say that the binormal vector of a constant curve "
+            "not on the origin defined over all real parameters is "
+            "equal to [0, 0, 0]."
+        )
+
+
+def test_linear_off_axis_curve_binormal_vector() -> None:
+    """Test that a curve that varies linearly over some axis over
+    the entire range of the parameter (which is defined for all reals)
+    has the correct binormal vector.
+    """
+    velocity = [1.61, -2.71, 3.14]
+
+    def linear_curve_radius(parameter: float) -> npt.ArrayLike:
+        """Linear curve."""
+        return parameter * np.array(velocity)
+
+    def linear_curve_first_derivative(parameter: float) -> npt.ArrayLike:
+        """Derivative of a linear curve."""
+        return np.array(velocity)
+
+    def linear_curve_second_derivative(parameter: float) -> npt.ArrayLike:
+        """Second derivative of a linear curve."""
+        return np.array([0.0, 0.0, 0.0])
+
+    curve = AnalyticCurve(
+        linear_curve_radius,
+        linear_curve_first_derivative,
+        linear_curve_second_derivative,
+    )
+
+    for parameter in np.linspace(-10.0, 10.0, num=41):
+        # since this is a straight line, perpendicular to tangent and
+        # normal is as good a test as we can get.  It'd be good to come
+        # up with a reasonable convention for what the binormal vector
+        # should be so that it can be stable.
+        assert (
+            np.dot(
+                curve.tangent_vector(parameter),
+                curve.binormal_vector(parameter),
+            )
+            == 0.0
+        ) and (
+            np.dot(
+                curve.normal_vector(parameter),
+                curve.binormal_vector(parameter),
+            )
+            == 0.0
+        ), (
+            "Fails to say that the binormal vector of a linear curve "
+            "defined over all real parameters is perpendicular to the "
+            "tangent vector."
+        )
+
+
+def test_quadratic_off_axis_curve_binormal_vector() -> None:
+    """Test that a curve that varies quadratically over some axis
+    over the entire range of the parameter (which is defined for all
+    reals) has the correct binormal vector.
+    """
+    acceleration = [1.61, -2.71, 3.14]
+
+    def quadratic_curve_radius(parameter: float) -> npt.ArrayLike:
+        """Linear curve."""
+        return 0.5 * parameter * np.array(acceleration)
+
+    def quadratic_curve_first_derivative(parameter: float) -> npt.ArrayLike:
+        """Derivative of a quadratic curve."""
+        return parameter * np.array(acceleration)
+
+    def quadratic_curve_second_derivative(parameter: float) -> npt.ArrayLike:
+        """Second derivative of a quadratic curve."""
+        return np.array(acceleration)
+
+    curve = AnalyticCurve(
+        quadratic_curve_radius,
+        quadratic_curve_first_derivative,
+        quadratic_curve_second_derivative,
+    )
+
+    for parameter in np.linspace(-10.0, 10.0, num=41):
+        # since this is a straight line, perpendicular to tangent and
+        # normal is as good a test as we can get.  It'd be good to come
+        # up with a reasonable convention for what the binormal vector
+        # should be so that it can be stable.
+        assert (
+            np.dot(
+                curve.tangent_vector(parameter),
+                curve.binormal_vector(parameter),
+            )
+            == 0.0
+        ) and (
+            np.dot(
+                curve.normal_vector(parameter),
+                curve.binormal_vector(parameter),
+            )
+            == 0.0
+        ), (
+            "Fails to say that the binormal vector of a "
+            "constant-acceleration curve defined over all real "
+            "parameters is perpendicular to the tangent vector."
+        )
+
+
+def test_non_linear_curve_binormal_vector() -> None:
+    """Test that a non-linear curve gives the correct binormal vector."""
+
+    def curve_radius(parameter: float) -> npt.ArrayLike:
+        """Helix radius."""
+        return np.array([np.cos(parameter), np.sin(parameter), parameter])
+
+    def curve_first_derivative(parameter: float) -> npt.ArrayLike:
+        """Helix first derivative."""
+        return np.array([-np.sin(parameter), np.cos(parameter), 1.0])
+
+    def curve_second_derivative(parameter: float) -> npt.ArrayLike:
+        """Helix second derivative."""
+        return np.array([-np.cos(parameter), -np.sin(parameter), 0.0])
+
+    curve = AnalyticCurve(
+        curve_radius,
+        curve_first_derivative,
+        curve_second_derivative,
+    )
+
+    for parameter in np.linspace(-10.0, 10.0, num=41):
+        magnitude = np.sqrt(
+            1.0
+            + np.abs(np.cos(parameter)) ** 2
+            + np.abs(np.sin(parameter)) ** 2
+        )
+        binormal_vector = np.array([np.sin(t), np.cos(t), 1.0]) / magnitude
+        assert np.array_equal(
+            curve.binormal_vector(parameter),
+            binormal_vector,
+        ), (
+            "Fails to say that the a non-linear curve defined over all "
+            "real parameters has the correct binormal vector of "
+            f"{binormal_vector} at parameter {parameter}."
         )
