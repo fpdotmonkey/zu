@@ -286,7 +286,7 @@ def test_non_linear_curve_radius() -> None:
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
-            curve.radius_at(parameter), quadratic_curve_radius(parameter)
+            curve.radius_at(parameter), curve_radius(parameter)
         ), (
             "Fails to say that the a non-linear curve defined over all "
             "real parameters has the correct radius at parameter "
@@ -572,7 +572,7 @@ def test_non_linear_curve_first_derivative() -> None:
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
             curve.first_derivative_at(parameter),
-            quadratic_curve_first_derivative(parameter),
+            curve_first_derivative(parameter),
         ), (
             "Fails to say that a non-linear curve defined over all real "
             "parameters has the correct first derivative at parameter "
@@ -1135,16 +1135,16 @@ def test_cubic_off_axis_curve_third_derivative() -> None:
         return np.array(jerk)
 
     curve = AnalyticCurve(
-        quadratic_curve_radius,
-        quadratic_curve_first_derivative,
-        quadratic_curve_second_derivative,
-        quadratic_curve_third_derivative,
+        cubic_curve_radius,
+        cubic_curve_first_derivative,
+        cubic_curve_second_derivative,
+        cubic_curve_third_derivative,
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
             curve.third_derivative_at(parameter),
-            quadratic_curve_third_derivative(parameter),
+            cubic_curve_third_derivative(parameter),
         ), (
             "Fails to say that the third derivative of a "
             "constant-jerk curve defined over all real parameters is "

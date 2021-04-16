@@ -162,8 +162,8 @@ def test_constant_not_origin_curve_tangent_vector() -> None:
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
-        assert np.is_equal(
-            curve.tangent_vector_at(parameter), [0.0, 0.0, 0.0]
+        assert np.array_equal(
+            curve.tangent_vector_at(parameter), np.array([0.0, 0.0, 0.0])
         ), (
             "Fails to say that the tangent vector of a constant curve "
             "not on the origin defined over all real parameters is "
@@ -595,7 +595,7 @@ def test_non_linear_curve_normal_vector() -> None:
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
-        normal_vector = np.array([-np.cos(t), -np.sin(t), 0.0])
+        normal_vector = np.array([-np.cos(parameter), -np.sin(parameter), 0.0])
         assert np.array_equal(
             curve.normal_vector_at(parameter),
             normal_vector,
@@ -937,7 +937,9 @@ def test_non_linear_curve_binormal_vector() -> None:
             + np.abs(np.cos(parameter)) ** 2
             + np.abs(np.sin(parameter)) ** 2
         )
-        binormal_vector = np.array([np.sin(t), np.cos(t), 1.0]) / magnitude
+        binormal_vector = (
+            np.array([np.sin(parameter), np.cos(parameter), 1.0]) / magnitude
+        )
         assert np.array_equal(
             curve.binormal_vector_at(parameter),
             binormal_vector,
@@ -982,7 +984,7 @@ def test_constant_curve_curvature() -> None:
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
-        assert np.isnan(curve.curvature_at(parameter))(
+        assert np.isnan(curve.curvature_at(parameter)), (
             "Fails to say that a constant curve defined over all real "
             "parameters has curvature of NaN."
         )
@@ -1093,7 +1095,7 @@ def test_constant_not_origin_curve_curvature() -> None:
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
-        assert np.isnan(curve.curvature_at(parameter))(
+        assert np.isnan(curve.curvature_at(parameter)), (
             "Fails to say that a constant curve defined over all real "
             "parameters has curvature of NaN."
         )
@@ -1241,7 +1243,7 @@ def test_constant_curve_torsion() -> None:
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
-        assert np.isnan(curve.torsion_at(parameter))(
+        assert np.isnan(curve.torsion_at(parameter)), (
             "Fails to say that a constant curve defined over all real "
             "parameters has torsion of NaN."
         )
@@ -1351,7 +1353,7 @@ def test_constant_not_origin_curve_torsion() -> None:
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
-        assert np.isnan(curve.torsion_at(parameter))(
+        assert np.isnan(curve.torsion_at(parameter)), (
             "Fails to say that a constant curve defined over all real "
             "parameters has torsion of NaN."
         )
@@ -1499,7 +1501,7 @@ def test_tschirnhausen_cubic() -> None:
             (10 + 9 * (parameter ** 2) * (3 + parameter ** 2))
             / (10 - 14 * parameter ** 2 + 9 * parameter ** 4) ** 3
         )
-        assert curve.curvature_at(parameter) == curvature, (
+        assert np.isclose(curve.curvature_at(parameter), curvature), (
             "Fails to get the correct curvature of a Tschirnhausen "
             f"polynomial {curvature} at parameter {parameter}."
         )
