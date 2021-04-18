@@ -2,6 +2,9 @@
 Unit tests to verify that analytic curves are well-behaved.
 """
 
+# pylint: disable=too-many-lines
+# pylint: disable=R0801
+
 import logging
 
 import numpy as np
@@ -26,18 +29,22 @@ def test_constant_curve_radius() -> None:
 
     def constant_curve_radius(parameter: float) -> npt.ArrayLike:
         """Constant curve at the origin."""
+        del parameter
         return np.array(position)
 
     def constant_curve_first_derivative(parameter: float) -> npt.ArrayLike:
         """First derivative of a constant curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     def constant_curve_second_derivative(parameter: float) -> npt.ArrayLike:
         """Second derivative of a constant curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     def constant_curve_third_derivative(parameter: float) -> npt.ArrayLike:
         """Third derivative of a constant curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     curve = AnalyticCurve(
@@ -69,14 +76,17 @@ def test_linear_single_axis_curve_radius() -> None:
 
     def linear_curve_first_derivative(parameter: float) -> npt.ArrayLike:
         """Derivative of a linear curve."""
+        del parameter
         return np.array(velocity)
 
     def linear_curve_second_derivative(parameter: float) -> npt.ArrayLike:
         """Second derivative of a linear curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     def linear_curve_third_derivative(parameter: float) -> npt.ArrayLike:
         """Third derivative of a linear curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     curve = AnalyticCurve(
@@ -113,10 +123,12 @@ def test_quadratic_single_axis_curve_radius() -> None:
 
     def quadratic_curve_second_derivative(parameter: float) -> npt.ArrayLike:
         """Second derivative of a quadratic curve."""
+        del parameter
         return np.array(acceleration)
 
     def quadratic_curve_third_derivative(parameter: float) -> npt.ArrayLike:
         """Third derivative of a quadratic curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     curve = AnalyticCurve(
@@ -146,18 +158,22 @@ def test_constant_not_origin_curve_radius() -> None:
 
     def constant_curve_radius(parameter: float) -> npt.ArrayLike:
         """Constant curve not at the origin."""
+        del parameter
         return np.array(position)
 
     def constant_curve_first_derivative(parameter: float) -> npt.ArrayLike:
         """Derivative of a constant curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     def constant_curve_second_derivative(parameter: float) -> npt.ArrayLike:
         """Second derivative of a constant curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     def constant_curve_third_derivative(parameter: float) -> npt.ArrayLike:
         """Third derivative of a constant curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     curve = AnalyticCurve(
@@ -190,14 +206,17 @@ def test_linear_off_axis_curve_radius() -> None:
 
     def linear_curve_first_derivative(parameter: float) -> npt.ArrayLike:
         """Derivative of a linear curve."""
+        del parameter
         return np.array(velocity)
 
     def linear_curve_second_derivative(parameter: float) -> npt.ArrayLike:
         """Second derivative of a linear curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     def linear_curve_third_derivative(parameter: float) -> npt.ArrayLike:
         """Third derivative of a linear curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     curve = AnalyticCurve(
@@ -234,10 +253,12 @@ def test_quadratic_off_axis_curve_radius() -> None:
 
     def quadratic_curve_second_derivative(parameter: float) -> npt.ArrayLike:
         """Second derivative of a quadratic curve."""
+        del parameter
         return np.array(acceleration)
 
     def quadratic_curve_third_derivative(parameter: float) -> npt.ArrayLike:
         """Third derivative of a quadratic curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     curve = AnalyticCurve(
@@ -306,18 +327,22 @@ def test_constant_curve_first_derivative() -> None:
 
     def constant_curve_radius(parameter: float) -> npt.ArrayLike:
         """Constant curve at the origin."""
+        del parameter
         return np.array(position)
 
     def constant_curve_first_derivative(parameter: float) -> npt.ArrayLike:
         """Derivative of a constant curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     def constant_curve_second_derivative(parameter: float) -> npt.ArrayLike:
         """Second derivative of a constant curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     def constant_curve_third_derivative(parameter: float) -> npt.ArrayLike:
         """Third derivative of a constant curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     curve = AnalyticCurve(
@@ -350,14 +375,17 @@ def test_linear_single_axis_curve_first_derivative() -> None:
 
     def linear_curve_first_derivative(parameter: float) -> npt.ArrayLike:
         """Derivative of a linear curve."""
+        del parameter
         return np.array(velocity)
 
     def linear_curve_second_derivative(parameter: float) -> npt.ArrayLike:
         """Second derivative of a linear curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     def linear_curve_third_derivative(parameter: float) -> npt.ArrayLike:
         """Third derivative of a linear curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     curve = AnalyticCurve(
@@ -395,10 +423,12 @@ def test_quadratic_single_axis_curve_first_derivative() -> None:
 
     def quadratic_curve_second_derivative(parameter: float) -> npt.ArrayLike:
         """Second derivative of a quadratic curve."""
+        del parameter
         return np.array(acceleration)
 
     def quadratic_curve_third_derivative(parameter: float) -> npt.ArrayLike:
         """Third derivative of a quadratic curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     curve = AnalyticCurve(
@@ -429,18 +459,22 @@ def test_constant_not_origin_curve_first_derivative() -> None:
 
     def constant_curve_radius(parameter: float) -> npt.ArrayLike:
         """Constant curve not at the origin."""
+        del parameter
         return np.array(position)
 
     def constant_curve_first_derivative(parameter: float) -> npt.ArrayLike:
         """Derivative of a constant curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     def constant_curve_second_derivative(parameter: float) -> npt.ArrayLike:
         """Second derivative of a constant curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     def constant_curve_third_derivative(parameter: float) -> npt.ArrayLike:
         """Third derivative of a constant curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     curve = AnalyticCurve(
@@ -474,14 +508,17 @@ def test_linear_off_axis_curve_first_derivative() -> None:
 
     def linear_curve_first_derivative(parameter: float) -> npt.ArrayLike:
         """Derivative of a linear curve."""
+        del parameter
         return np.array(velocity)
 
     def linear_curve_second_derivative(parameter: float) -> npt.ArrayLike:
         """Second derivative of a linear curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     def linear_curve_third_derivative(parameter: float) -> npt.ArrayLike:
         """Third derivative of a linear curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     curve = AnalyticCurve(
@@ -519,10 +556,12 @@ def test_quadratic_off_axis_curve_first_derivative() -> None:
 
     def quadratic_curve_second_derivative(parameter: float) -> npt.ArrayLike:
         """Second derivative of a quadratic curve."""
+        del parameter
         return np.array(acceleration)
 
     def quadratic_curve_third_derivative(parameter: float) -> npt.ArrayLike:
         """Third derivative of a quadratic curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     curve = AnalyticCurve(
@@ -592,18 +631,22 @@ def test_constant_curve_second_derivative() -> None:
 
     def constant_curve_radius(parameter: float) -> npt.ArrayLike:
         """Constant curve at the origin."""
+        del parameter
         return np.array(position)
 
     def constant_curve_first_derivative(parameter: float) -> npt.ArrayLike:
         """Derivative of a constant curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     def constant_curve_second_derivative(parameter: float) -> npt.ArrayLike:
         """Second derivative of a constant curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     def constant_curve_third_derivative(parameter: float) -> npt.ArrayLike:
         """Third derivative of a constant curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     curve = AnalyticCurve(
@@ -636,14 +679,17 @@ def test_linear_single_axis_curve_second_derivative() -> None:
 
     def linear_curve_first_derivative(parameter: float) -> npt.ArrayLike:
         """Derivative of a linear curve."""
+        del parameter
         return np.array(velocity)
 
     def linear_curve_second_derivative(parameter: float) -> npt.ArrayLike:
         """Second derivative of a linear curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     def linear_curve_third_derivative(parameter: float) -> npt.ArrayLike:
         """Third derivative of a linear curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     curve = AnalyticCurve(
@@ -680,10 +726,12 @@ def test_quadratic_single_axis_curve_second_derivative() -> None:
 
     def quadratic_curve_second_derivative(parameter: float) -> npt.ArrayLike:
         """Second derivative of a quadratic curve."""
+        del parameter
         return np.array(acceleration)
 
     def quadratic_curve_third_derivative(parameter: float) -> npt.ArrayLike:
         """Third derivative of a quadratic curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     curve = AnalyticCurve(
@@ -713,18 +761,22 @@ def test_constant_not_origin_curve_second_derivative() -> None:
 
     def constant_curve_radius(parameter: float) -> npt.ArrayLike:
         """Constant curve not at the origin."""
+        del parameter
         return np.array(position)
 
     def constant_curve_first_derivative(parameter: float) -> npt.ArrayLike:
         """Derivative of a constant curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     def constant_curve_second_derivative(parameter: float) -> npt.ArrayLike:
         """Second derivative of a constant curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     def constant_curve_third_derivative(parameter: float) -> npt.ArrayLike:
         """Third derivative of a constant curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     curve = AnalyticCurve(
@@ -758,14 +810,17 @@ def test_linear_off_axis_curve_second_derivative() -> None:
 
     def linear_curve_first_derivative(parameter: float) -> npt.ArrayLike:
         """Derivative of a linear curve."""
+        del parameter
         return np.array(velocity)
 
     def linear_curve_second_derivative(parameter: float) -> npt.ArrayLike:
         """Second derivative of a linear curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     def linear_curve_third_derivative(parameter: float) -> npt.ArrayLike:
         """Third derivative of a linear curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     curve = AnalyticCurve(
@@ -802,10 +857,12 @@ def test_quadratic_off_axis_curve_second_derivative() -> None:
 
     def quadratic_curve_second_derivative(parameter: float) -> npt.ArrayLike:
         """Second derivative of a quadratic curve."""
+        del parameter
         return np.array(acceleration)
 
     def quadratic_curve_third_derivative(parameter: float) -> npt.ArrayLike:
         """Third derivative of a quadratic curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     curve = AnalyticCurve(
@@ -877,18 +934,22 @@ def test_constant_curve_third_derivative() -> None:
 
     def constant_curve_radius(parameter: float) -> npt.ArrayLike:
         """Constant curve at the origin."""
+        del parameter
         return np.array(position)
 
     def constant_curve_first_derivative(parameter: float) -> npt.ArrayLike:
         """Derivative of a constant curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     def constant_curve_second_derivative(parameter: float) -> npt.ArrayLike:
         """Second derivative of a constant curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     def constant_curve_third_derivative(parameter: float) -> npt.ArrayLike:
         """Third derivative of a constant curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     curve = AnalyticCurve(
@@ -921,14 +982,17 @@ def test_linear_single_axis_curve_third_derivative() -> None:
 
     def linear_curve_first_derivative(parameter: float) -> npt.ArrayLike:
         """Derivative of a linear curve."""
+        del parameter
         return np.array(velocity)
 
     def linear_curve_second_derivative(parameter: float) -> npt.ArrayLike:
         """Second derivative of a linear curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     def linear_curve_third_derivative(parameter: float) -> npt.ArrayLike:
         """Third derivative of a linear curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     curve = AnalyticCurve(
@@ -965,10 +1029,12 @@ def test_quadratic_single_axis_curve_third_derivative() -> None:
 
     def quadratic_curve_second_derivative(parameter: float) -> npt.ArrayLike:
         """Second derivative of a quadratic curve."""
+        del parameter
         return np.array(acceleration)
 
     def quadratic_curve_third_derivative(parameter: float) -> npt.ArrayLike:
         """Third derivative of a quadratic curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     curve = AnalyticCurve(
@@ -998,18 +1064,22 @@ def test_constant_not_origin_curve_third_derivative() -> None:
 
     def constant_curve_radius(parameter: float) -> npt.ArrayLike:
         """Constant curve not at the origin."""
+        del parameter
         return np.array(position)
 
     def constant_curve_first_derivative(parameter: float) -> npt.ArrayLike:
         """Derivative of a constant curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     def constant_curve_second_derivative(parameter: float) -> npt.ArrayLike:
         """Second derivative of a constant curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     def constant_curve_third_derivative(parameter: float) -> npt.ArrayLike:
         """Third derivative of a constant curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     curve = AnalyticCurve(
@@ -1043,14 +1113,17 @@ def test_linear_off_axis_curve_third_derivative() -> None:
 
     def linear_curve_first_derivative(parameter: float) -> npt.ArrayLike:
         """Derivative of a linear curve."""
+        del parameter
         return np.array(velocity)
 
     def linear_curve_second_derivative(parameter: float) -> npt.ArrayLike:
         """Second derivative of a linear curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     def linear_curve_third_derivative(parameter: float) -> npt.ArrayLike:
         """Third derivative of a linear curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     curve = AnalyticCurve(
@@ -1087,10 +1160,12 @@ def test_quadratic_off_axis_curve_third_derivative() -> None:
 
     def quadratic_curve_second_derivative(parameter: float) -> npt.ArrayLike:
         """Second derivative of a quadratic curve."""
+        del parameter
         return np.array(acceleration)
 
     def quadratic_curve_third_derivative(parameter: float) -> npt.ArrayLike:
         """Third derivative of a quadratic curve."""
+        del parameter
         return np.array([0.0, 0.0, 0.0])
 
     curve = AnalyticCurve(
@@ -1132,6 +1207,7 @@ def test_cubic_off_axis_curve_third_derivative() -> None:
 
     def cubic_curve_third_derivative(parameter: float) -> npt.ArrayLike:
         """Third derivative of a cubic curve."""
+        del parameter
         return np.array(jerk)
 
     curve = AnalyticCurve(

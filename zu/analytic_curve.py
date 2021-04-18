@@ -6,8 +6,8 @@ Class AnalyticCurve:
     The object representing such a spacial curve.
 """
 
-from numbers import Number
-from typing import Callable, Optional, Union
+import logging
+from typing import Callable, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -21,16 +21,10 @@ class AnalyticCurve:
 
     def __init__(
         self,
-        radius: Union[Callable[[Number], npt.ArrayLike], npt.ArrayLike],
-        first_derivative: Optional[
-            Union[Callable[[Number], npt.ArrayLike], npt.ArrayLike]
-        ],
-        second_derivative: Optional[
-            Union[Callable[[Number], npt.ArrayLike], npt.ArrayLike]
-        ],
-        third_derivative: Optional[
-            Union[Callable[[Number], npt.ArrayLike], npt.ArrayLike]
-        ],
+        radius: Callable[[float], npt.ArrayLike],
+        first_derivative: Callable[[float], npt.ArrayLike],
+        second_derivative: Callable[[float], npt.ArrayLike],
+        third_derivative: Callable[[float], npt.ArrayLike],
     ):
         """Constructor for an analytic curve.  Note that there is no
         validation that the functions given to this constructor are
@@ -46,58 +40,58 @@ class AnalyticCurve:
         respect to the parameter.  It can be given as a a function
         mapping a parameter to a 3-vector, a constant 3-vector if the
         first derivative is constant, or None if you're not interested
-        in calculating anything based on the third derivative.  It's
-        required to calculate the tangent, normal, and binormal vectors,
-        and the curvature and torsion of the curve.  Additionally, if
-        this is None, then all higher-order derivatives passed to the
-        constructor will be ignored.
+        in calculating anything based on the third derivative.
 
         second_derivative is the rate of the rate of change in the
         radius with respect to the parameter.  If the curve is
         understood to be a particle flying through space in time, the
         second derivative would be its acceleration.  What's passed in
-        is the same as first_derivative.  Should you opt for passing in
-        None, you will not be able to query the normal or binormal
-        vectors, nor the curvature or torsion.
+        is the same as first_derivative.
 
         third_derivative is the thrice iterated derivative with respect
         to parameter of the radius.  If the curve is to be understood as
-        economic price level (somehow in 3D), then Richard Nixon would
-        advertise that the third derivative is negative in saying "the
-        rate of increase of inflation was decreasing" in hopes of
-        deceiving you that the economy is good.  The shape of this
-        argument is just the same as for first_derivative and
-        second_derivative, but with None passed in, only torsion is off
-        limits.
+        economic price level (somehow in 3D), then former US President
+        Richard Nixon would advertise that the third derivative is
+        negative in saying "the rate of increase of inflation was
+        decreasing" in hopes of deceiving you that the economy is good.
+        The shape of this argument is just the same as for
+        first_derivative and second_derivative.
         """
-        self._radius = radius
-        self._first_derivative = first_derivative
-        self._second_derivative = second_derivative
-        self._third_derivative = third_derivative
+        np.seterr("raise")
+        self._radius: Callable[[float], npt.ArrayLike] = radius
+        self._first_derivative: Callable[
+            [float], npt.ArrayLike
+        ] = first_derivative
+        self._second_derivative: Callable[
+            [float], npt.ArrayLike
+        ] = second_derivative
+        self._third_derivative: Callable[
+            [float], npt.ArrayLike
+        ] = third_derivative
 
-    def radius_at(self, parameter: Number) -> npt.ArrayLike:
+    def radius_at(self, parameter: float) -> npt.ArrayLike:
         """Computes the 3-vector coordinate at parameter and returns it."""
         return self._radius(parameter)
 
-    def first_derivative_at(self, parameter: Number) -> npt.ArrayLike:
+    def first_derivative_at(self, parameter: float) -> npt.ArrayLike:
         """Computes the 3-vector first derivative at parameter and
         returns it.
         """
         return self._first_derivative(parameter)
 
-    def second_derivative_at(self, parameter: Number) -> npt.ArrayLike:
+    def second_derivative_at(self, parameter: float) -> npt.ArrayLike:
         """Computes the 3-vector second derivative at parameter and
         returns it.
         """
         return self._second_derivative(parameter)
 
-    def third_derivative_at(self, parameter: Number) -> npt.ArrayLike:
+    def third_derivative_at(self, parameter: float) -> npt.ArrayLike:
         """Computes the 3-vector third derivative at parameter and
         returns it.
         """
         return self._third_derivative(parameter)
 
-    def curvature_at(self, parameter: Number) -> float:
+    def curvature_at(self, parameter: float) -> float:
         r"""This calculates the curvature of the curve at parameter.
 
         The curvature is the inverse of the radius of the circle tangent
@@ -114,18 +108,37 @@ class AnalyticCurve:
         where k is curvature, t is parameter, r is the radius vector,
         and \times is the vector (cross) product.
         """
-        return np.inf
-        # return (
-        #     np.linalg.norm(
-        #         np.cross(
-        #             self._first_derivative(parameter),
-        #             self._second_derivative(parameter),
-        #         )
-        #     )
-        #     / np.linalg.norm(self._first_derivative(parameter)) ** 3
-        # )
+        first_derivative: npt.ArrayLike = self._first_derivative(parameter)
+        second_derivative: npt.ArrayLike = self._second_derivative(parameter)
+        logging.debug(
+            "Calculating curvature of a curve with first derivative %s "
+            "and second derivative %s.",
+            first_derivative,
+            second_derivative,
+        )
+        if np.array_equal(first_derivative, np.array([0.0, 0.0, 0.0])):
+            logging.debug(
+                "The first derivative equals [0, 0, 0], so curvature is "
+                "0.0."
+            )
+            return 0.0
 
-    def torsion_at(self, parameter: Number) -> float:
+        curvature: float = (
+            np.linalg.norm(
+                np.cross(
+                    first_derivative,
+                    second_derivative,
+                )
+            )
+            / (np.linalg.norm(first_derivative) ** 3)
+        )
+        logging.debug(
+            "Calculating in the general case, the curvature is %s",
+            curvature,
+        )
+        return curvature
+
+    def torsion_at(self, parameter: float) -> float:
         r"""This calculates the curvature of the curve at parameter.
 
         The torsion of a curve is the rate of axial twist in that curve.
@@ -142,9 +155,38 @@ class AnalyticCurve:
         \times is the vector (cross) product, and \cdot is the scalar
         (dot) product.
         """
-        return np.inf
+        first_derivative: npt.ArrayLike = self._first_derivative(parameter)
+        second_derivative: npt.ArrayLike = self._second_derivative(parameter)
+        third_derivative: npt.ArrayLike = self._third_derivative(parameter)
+        logging.debug(
+            "Calculating torsion of a curve with first derivative %s, "
+            "second derivative %s, and third derivative %s.",
+            first_derivative,
+            second_derivative,
+            third_derivative,
+        )
 
-    def tangent_vector_at(self, parameter: Number) -> float:
+        if np.isclose(
+            np.linalg.norm(np.cross(first_derivative, second_derivative)), 0.0
+        ):
+            logging.debug(
+                "The first and second derivatives are parallel, so the "
+                "torsion must be 0."
+            )
+            return 0.0
+
+        torsion: float = np.dot(
+            np.cross(first_derivative, second_derivative), third_derivative
+        ) / (
+            np.linalg.norm(np.cross(first_derivative, second_derivative)) ** 2
+        )
+        logging.debug(
+            "Calculating in the general case, the torsion is %s",
+            torsion,
+        )
+        return torsion
+
+    def tangent_vector_at(self, parameter: float) -> npt.ArrayLike:
         r"""This calculates the tangent vector of the curve at
         parameter.
 
@@ -161,9 +203,30 @@ class AnalyticCurve:
         where T is the tangent vector, t is parameter, and r is the
         radius vector.
         """
-        return np.array([np.inf, np.inf, np.inf])
+        first_derivative: npt.ArrayLike = self._first_derivative(parameter)
+        logging.debug(
+            "Calculating the tangent vector of a curve with first "
+            "derivative %s.",
+            first_derivative,
+        )
 
-    def normal_vector_at(self, parameter: Number) -> float:
+        if np.isclose(np.linalg.norm(first_derivative), 0.0):
+            logging.debug(
+                "The first derivative equals [0, 0, 0], so the tangent "
+                "vector is [0, 0, 0]."
+            )
+            return np.array([0.0, 0.0, 0.0])
+
+        tangent_vector: npt.ArrayLike = first_derivative / np.linalg.norm(
+            first_derivative
+        )
+        logging.debug(
+            "Calculating in the general case, the tangent vector is %s.",
+            tangent_vector,
+        )
+        return tangent_vector
+
+    def normal_vector_at(self, parameter: float) -> npt.ArrayLike:
         r"""This calculates the normal vector of the curve at
         parameter.
 
@@ -187,10 +250,52 @@ class AnalyticCurve:
         where n is the normal vector, t is parameter, r is the radius
         vector, k is the curvature at t, and \cdot is the scalar (dot)
         product.
-        """
-        return np.array([np.inf, np.inf, np.inf])
 
-    def binormal_vector_at(self, parameter: Number) -> float:
+        In cases where the normal vector would be ill-defined, i.e. when
+        the first and second derivatives of the curve are parallel (in
+        other words, a straight line) or when the first derivative is
+        the zero vector, the normal vector will be made to be the zero
+        vector.
+        """
+        first_derivative: npt.ArrayLike = self._first_derivative(parameter)
+        second_derivative: npt.ArrayLike = self._second_derivative(parameter)
+        logging.debug(
+            "Calculating the normal vector of a curve with first "
+            "derivative %s and second derivative %s.",
+            first_derivative,
+            second_derivative,
+        )
+
+        if np.isclose(
+            np.linalg.norm(np.cross(first_derivative, second_derivative)), 0.0
+        ):
+            logging.debug(
+                "The first and second derivatives are parallel, so the "
+                "normal vector must be [0, 0, 0]."
+            )
+            return [0.0, 0.0, 0.0]
+
+        if np.isclose(np.linalg.norm(first_derivative), 0.0):
+            logging.debug(
+                "The first derivative equals [0, 0, 0], so the normal "
+                "vector is [0, 0, 0]."
+            )
+            return np.array([0.0, 0.0, 0.0])
+
+        normal_vector: npt.ArrayLike = (
+            np.power(np.linalg.norm(first_derivative), 2) * second_derivative
+            - np.dot(first_derivative, second_derivative) * first_derivative
+        ) / (
+            np.linalg.norm(np.cross(first_derivative, second_derivative))
+            * np.linalg.norm(first_derivative)
+        )
+        logging.debug(
+            "Calculating in the general case, the normal vector is %s.",
+            normal_vector,
+        )
+        return normal_vector
+
+    def binormal_vector_at(self, parameter: float) -> npt.ArrayLike:
         r"""This calculates the binormal vector of the curve at
         parameter.
 
@@ -209,4 +314,29 @@ class AnalyticCurve:
         where b is torsion, t is parameter, r is the radius vector, k is
         the curvature at t, and \times is the vector (cross) product.
         """
-        return np.array([np.inf, np.inf, np.inf])
+        first_derivative: npt.ArrayLike = self._first_derivative(parameter)
+        second_derivative: npt.ArrayLike = self._second_derivative(parameter)
+        logging.debug(
+            "Calculating the binormal vector of a curve with first "
+            "derivative %s and second derivative %s.",
+            first_derivative,
+            second_derivative,
+        )
+
+        if np.isclose(
+            np.linalg.norm(np.cross(first_derivative, second_derivative)), 0.0
+        ):
+            logging.debug(
+                "The first and second derivatives are parallel, so the "
+                "binormal vector must be [0, 0, 0]."
+            )
+            return [0.0, 0.0, 0.0]
+
+        binormal_vector: npt.ArrayLike = np.cross(
+            first_derivative, second_derivative
+        ) / np.linalg.norm(np.cross(first_derivative, second_derivative))
+        logging.debug(
+            "Calculating in the general case, the binormal vector is %s.",
+            binormal_vector,
+        )
+        return binormal_vector
