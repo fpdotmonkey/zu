@@ -47,8 +47,7 @@ def test_inifinite_curve() -> None:
         linear_curve_first_derivative,
         linear_curve_second_derivative,
         linear_curve_third_derivative,
-        upper_bound=None,
-        lower_bound=None,
+        bounds=(None, None),
     )
 
     for parameter in np.append(
@@ -94,8 +93,7 @@ def test_curve_with_upper_bound() -> None:
         linear_curve_first_derivative,
         linear_curve_second_derivative,
         linear_curve_third_derivative,
-        upper_bound=10.0,
-        lower_bound=None,
+        bounds=(None, 10.0),
     )
 
     for parameter in np.append(
@@ -110,11 +108,8 @@ def test_curve_with_upper_bound() -> None:
 
     with pytest.raises(AnalyticCurve.AboveBounds) as above_bounds:
         curve.radius_at(10.0001)
-    assert above_bounds.value[0] and isinstance(
-        above_bounds.value[0], str
-    ), "Fails to send the AboveBounds exception with a message."
     assert np.isclose(
-        above_bounds.value[1], 10.0
+        above_bounds.value.upper_bound, 10.0
     ), "Fails to send the upper bound with the AboveBounds exception."
 
 
@@ -149,8 +144,7 @@ def test_curve_with_lower_bound() -> None:
         linear_curve_first_derivative,
         linear_curve_second_derivative,
         linear_curve_third_derivative,
-        upper_bound=None,
-        lower_bound=-10.0,
+        bounds=(-10.0, None),
     )
 
     for parameter in np.append(
@@ -165,11 +159,8 @@ def test_curve_with_lower_bound() -> None:
 
     with pytest.raises(AnalyticCurve.BelowBounds) as below_bounds:
         curve.radius_at(-10.0001)
-    assert below_bounds.value[0] and isinstance(
-        below_bounds.value[0], str
-    ), "Fails to send the BelowBounds exception with a message."
     assert np.isclose(
-        below_bounds.value[1], -10.0
+        below_bounds.value.lower_bound, -10.0
     ), "Fails to send the lower bound with the BelowBounds exception."
 
 
@@ -204,8 +195,7 @@ def test_curve_with_upper_and_lower_bounds() -> None:
         linear_curve_first_derivative,
         linear_curve_second_derivative,
         linear_curve_third_derivative,
-        upper_bound=10.0,
-        lower_bound=-10.0,
+        bounds=(-10.0, 10.0),
     )
 
     for parameter in np.linspace(-10.0, 10, num=21):
@@ -218,18 +208,35 @@ def test_curve_with_upper_and_lower_bounds() -> None:
 
     with pytest.raises(AnalyticCurve.BelowBounds) as below_bounds:
         curve.radius_at(-10.0001)
-    assert below_bounds.value[0] and isinstance(
-        below_bounds.value[0], str
-    ), "Fails to send the BelowBounds exception with a message."
     assert np.isclose(
-        below_bounds.value[1], -10.0
+        below_bounds.value.lower_bound, -10.0
     ), "Fails to send the lower bound with the BelowBounds exception."
 
     with pytest.raises(AnalyticCurve.AboveBounds) as above_bounds:
         curve.radius_at(10.0001)
-    assert above_bounds.value[0] and isinstance(
-        above_bounds.value[0], str
-    ), "Fails to send the AboveBounds exception with a message."
     assert np.isclose(
-        above_bounds.value[1], 10.0
+        above_bounds.value.upper_bound, 10.0
     ), "Fails to send the upper bound with the AboveBounds exception."
+
+
+def test_wrong_length_bounds() -> None:
+    """If you give `bounds` as something that's not length-2, it should
+    raise a ValueError.
+    """
+    with pytest.raises(ValueError):
+        AnalyticCurve(
+            lambda parameter: np.array([0, 0, 0]),
+            lambda parameter: np.array([0, 0, 0]),
+            lambda parameter: np.array([0, 0, 0]),
+            lambda parameter: np.array([0, 0, 0]),
+            bounds=(-10.0, 10.0, 11.0),
+        )
+
+    with pytest.raises(ValueError):
+        AnalyticCurve(
+            lambda parameter: np.array([0, 0, 0]),
+            lambda parameter: np.array([0, 0, 0]),
+            lambda parameter: np.array([0, 0, 0]),
+            lambda parameter: np.array([0, 0, 0]),
+            bounds=-10.0,
+        )

@@ -7,7 +7,7 @@ Class AnalyticCurve:
 """
 
 import logging
-from typing import Callable, Union
+from typing import Callable, Optional, Sized
 
 import numpy as np
 import numpy.typing as npt
@@ -17,7 +17,51 @@ class AnalyticCurve:
     """A 1D curve in 3D space defined by analytical functions.  It
     provides information on the curve's derivatives, the curve's
     trihedral, and some other geometric information.
+
+    There also are exceptions `BelowBounds` and `AboveBounds` which get
+    raised when an out-of-bound parameter is given that contain
+    information about the curve bounds.
     """
+
+    class AboveBounds(Exception):
+        """An exception raised when a value of the curve is requested at
+        a parameter that is greater than the upper bound.
+        """
+
+        def __init__(self, message: str, upper_bound: float):
+            """Generate an exception that contains a message and the
+            upper bound that has been exceeded.
+            """
+            super().__init__(self)
+            self._upper_bound = upper_bound
+
+        @property
+        def upper_bound(self):
+            """The highest parameter this curve will admit before
+            raising an exception.
+            """
+            return self._upper_bound
+
+    class BelowBounds(Exception):
+        """An exception raised when a value of the curve is requested at
+        a parameter that is greater than the upper bound.
+        """
+
+        def __init__(self, message: str, lower_bound: float):
+            """Pass in a friendly message to the user that they've
+            exceeded their limit with respect to low-end parameters
+            using message, and tell them what that limit was with
+            lower_bound.
+            """
+            super().__init__(self)
+            self._lower_bound = lower_bound
+
+        @property
+        def lower_bound(self):
+            """The lowest legal parameter on this curve.  Lower will get
+            you an exception.
+            """
+            return self._lower_bound
 
     def __init__(
         self,
@@ -25,6 +69,7 @@ class AnalyticCurve:
         first_derivative: Callable[[float], npt.ArrayLike],
         second_derivative: Callable[[float], npt.ArrayLike],
         third_derivative: Callable[[float], npt.ArrayLike],
+        bounds: Optional[Sized[Optional[float]]] = None,
     ):
         """Constructor for an analytic curve.  Note that there is no
         validation that the functions given to this constructor are
@@ -58,6 +103,20 @@ class AnalyticCurve:
         first_derivative and second_derivative.
         """
         np.seterr("raise")
+
+        self._upper_bound: float = np.inf
+        self._lower_bound: float = np.NINF
+        if bounds:
+            try:
+                if len(bounds) != 2:
+                    raise ValueError("`bounds` must be a length-2 Iterable.")
+            except TypeError:
+                raise ValueError("`bounds` must be a length-2 Iterable.")
+            if bounds[0]:
+                self._lower_bound = bounds[0]
+            if bounds[1]:
+                self._upper_bound = bounds[1]
+
         self._radius: Callable[[float], npt.ArrayLike] = radius
         self._first_derivative: Callable[
             [float], npt.ArrayLike
@@ -71,24 +130,28 @@ class AnalyticCurve:
 
     def radius_at(self, parameter: float) -> npt.ArrayLike:
         """Computes the 3-vector coordinate at parameter and returns it."""
+        self._check_bounds(parameter)
         return self._radius(parameter)
 
     def first_derivative_at(self, parameter: float) -> npt.ArrayLike:
         """Computes the 3-vector first derivative at parameter and
         returns it.
         """
+        self._check_bounds(parameter)
         return self._first_derivative(parameter)
 
     def second_derivative_at(self, parameter: float) -> npt.ArrayLike:
         """Computes the 3-vector second derivative at parameter and
         returns it.
         """
+        self._check_bounds(parameter)
         return self._second_derivative(parameter)
 
     def third_derivative_at(self, parameter: float) -> npt.ArrayLike:
         """Computes the 3-vector third derivative at parameter and
         returns it.
         """
+        self._check_bounds(parameter)
         return self._third_derivative(parameter)
 
     def curvature_at(self, parameter: float) -> float:
@@ -340,3 +403,20 @@ class AnalyticCurve:
             binormal_vector,
         )
         return binormal_vector
+
+    def _check_bounds(self, parameter: float) -> None:
+        """This compares the parameter to the upper and lower bounds,
+        and if it's out of bounds, it raises the appropriate exception.
+        """
+        if parameter > self._upper_bound:
+            raise self.AboveBounds(
+                f"Parameter {parameter} is greater than the upper bound "
+                f"parameter {self._upper_bound}.",
+                self._upper_bound,
+            )
+        if parameter < self._lower_bound:
+            raise self.BelowBounds(
+                f"Parameter {parameter} is less than the lower bound "
+                f"parameter {self._lower_bound}.",
+                self._lower_bound,
+            )
