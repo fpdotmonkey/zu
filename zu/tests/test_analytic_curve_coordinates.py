@@ -3,7 +3,6 @@ Unit tests to verify that analytic curves are well-behaved.
 """
 
 # pylint: disable=too-many-lines
-# pylint: disable=R0801
 
 import logging
 
