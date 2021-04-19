@@ -7,7 +7,7 @@ Class AnalyticCurve:
 """
 
 import logging
-from typing import Callable, Optional, Sized
+from typing import Callable, Tuple
 
 import numpy as np
 import numpy.typing as npt
@@ -33,6 +33,7 @@ class AnalyticCurve:
             upper bound that has been exceeded.
             """
             super().__init__(self)
+            self._message = message
             self._upper_bound = upper_bound
 
         @property
@@ -54,6 +55,7 @@ class AnalyticCurve:
             lower_bound.
             """
             super().__init__(self)
+            self._message = message
             self._lower_bound = lower_bound
 
         @property
@@ -65,11 +67,15 @@ class AnalyticCurve:
 
     def __init__(
         self,
-        radius: Callable[[float], npt.ArrayLike],
-        first_derivative: Callable[[float], npt.ArrayLike],
-        second_derivative: Callable[[float], npt.ArrayLike],
-        third_derivative: Callable[[float], npt.ArrayLike],
-        bounds: Optional[Sized[Optional[float]]] = None,
+        coordinates: Tuple[
+            Callable[[float], npt.ArrayLike],
+            Callable[[float], npt.ArrayLike],
+            Callable[[float], npt.ArrayLike],
+            Callable[[float], npt.ArrayLike],
+        ],
+        bounds: Tuple[float, float] = (np.NINF, np.inf),
+        periodic: bool = False,
+        cyclic_closed: bool = False,
     ):
         """Constructor for an analytic curve.  Note that there is no
         validation that the functions given to this constructor are
@@ -77,82 +83,125 @@ class AnalyticCurve:
         ensure whatever functions given are indeed the derivatives of
         the others.
 
-        radius is a function that takes a real parameter and returns the
-        displacement of each point on the curve from the origin.  It may
-        also be a constant 3-vector if the curve is simply a point.
+        coordinates is a tuple of functions heads.  Each function must
+        take a float and return a numpy array-like.  The zeroth function
+        should represent the "radius" of the curve (i.e. the coordinates
+        that the curve passes through) and each function at index i
+        beyond that represents the ith derivative.  You must include all
+        derivatives through the 3rd.
 
-        first_derivative is the rate of change of the radius with
-        respect to the parameter.  It can be given as a a function
-        mapping a parameter to a 3-vector, a constant 3-vector if the
-        first derivative is constant, or None if you're not interested
-        in calculating anything based on the third derivative.
+        The radius  takes a real parameter and returns the displacement
+        of each point on the curve from the origin.
 
-        second_derivative is the rate of the rate of change in the
+        The first derivative is the rate of change of the radius with
+        respect to the parameter.  It must be given as a a function
+        mapping a parameter to a 3-vector.
+
+        The second derivative is the rate of the rate of change in the
         radius with respect to the parameter.  If the curve is
         understood to be a particle flying through space in time, the
         second derivative would be its acceleration.  What's passed in
         is the same as first_derivative.
 
-        third_derivative is the thrice iterated derivative with respect
-        to parameter of the radius.  If the curve is to be understood as
-        economic price level (somehow in 3D), then former US President
-        Richard Nixon would advertise that the third derivative is
-        negative in saying "the rate of increase of inflation was
-        decreasing" in hopes of deceiving you that the economy is good.
-        The shape of this argument is just the same as for
-        first_derivative and second_derivative.
+        The third derivative is the thrice iterated derivative with
+        respect to parameter of the radius.  If the curve is to be
+        understood as economic price level (somehow in 3D), then former
+        US President Richard Nixon would advertise that the third
+        derivative is negative in saying "the rate of increase of
+        inflation was decreasing" in hopes of deceiving you that the
+        economy is good.  The shape of this argument is just the same as
+        for the first and second derivatives.
         """
         np.seterr("raise")
 
-        self._upper_bound: float = np.inf
-        self._lower_bound: float = np.NINF
-        if bounds:
-            try:
-                if len(bounds) != 2:
-                    raise ValueError("`bounds` must be a length-2 Iterable.")
-            except TypeError:
-                raise ValueError("`bounds` must be a length-2 Iterable.")
-            if bounds[0]:
-                self._lower_bound = bounds[0]
-            if bounds[1]:
-                self._upper_bound = bounds[1]
+        if len(coordinates) < 4:
+            raise ValueError(
+                "coordinates array must include the radius, first "
+                "derivative, second derivative, and third derivative."
+            )
+        if len(bounds) != 2:
+            raise ValueError("`bounds` must be a length-2 Iterable.")
+        if bounds[0] > bounds[1]:
+            raise ValueError(
+                "bounds[1] must be greater than or equal to bounds[0]."
+            )
+        if periodic and (np.inf in bounds or np.NINF in bounds):
+            raise ValueError(
+                "Periodic curves may not take infinite parameters."
+            )
+        if cyclic_closed and not periodic:
+            raise ValueError(
+                "cyclic_closed is only valid if periodic is True."
+            )
 
-        self._radius: Callable[[float], npt.ArrayLike] = radius
-        self._first_derivative: Callable[
-            [float], npt.ArrayLike
-        ] = first_derivative
-        self._second_derivative: Callable[
-            [float], npt.ArrayLike
-        ] = second_derivative
-        self._third_derivative: Callable[
-            [float], npt.ArrayLike
-        ] = third_derivative
+        self._coordinates: Tuple[
+            Callable[[float], npt.ArrayLike],
+            Callable[[float], npt.ArrayLike],
+            Callable[[float], npt.ArrayLike],
+            Callable[[float], npt.ArrayLike],
+        ] = coordinates
+
+        self._lower_bound: float = bounds[0]
+        self._upper_bound: float = bounds[1]
+
+        if (
+            cyclic_closed
+            and not np.isclose(
+                self._coordinates[0](self._lower_bound),
+                self._coordinates[0](self._upper_bound),
+            ).all()
+        ):
+            raise ValueError(
+                "This curve is not cyclic closed, but you "
+                "said it should be."
+            )
+
+        self._periodic: bool = periodic
+        self._cyclic_closed: bool = cyclic_closed
 
     def radius_at(self, parameter: float) -> npt.ArrayLike:
         """Computes the 3-vector coordinate at parameter and returns it."""
-        self._check_bounds(parameter)
-        return self._radius(parameter)
+        radius = self._coordinates[0](self._bounded(parameter))
+        logging.debug(
+            "Calculated radius of %s from parameter %f.", radius, parameter
+        )
+        return radius
 
     def first_derivative_at(self, parameter: float) -> npt.ArrayLike:
         """Computes the 3-vector first derivative at parameter and
         returns it.
         """
-        self._check_bounds(parameter)
-        return self._first_derivative(parameter)
+        first_derivative = self._coordinates[1](self._bounded(parameter))
+        logging.debug(
+            "Calculated first derivative of %s from parameter %f.",
+            first_derivative,
+            parameter,
+        )
+        return first_derivative
 
     def second_derivative_at(self, parameter: float) -> npt.ArrayLike:
         """Computes the 3-vector second derivative at parameter and
         returns it.
         """
-        self._check_bounds(parameter)
-        return self._second_derivative(parameter)
+        second_derivative = self._coordinates[2](self._bounded(parameter))
+        logging.debug(
+            "Calculated second derivative of %s from parameter %f.",
+            second_derivative,
+            parameter,
+        )
+        return second_derivative
 
     def third_derivative_at(self, parameter: float) -> npt.ArrayLike:
         """Computes the 3-vector third derivative at parameter and
         returns it.
         """
-        self._check_bounds(parameter)
-        return self._third_derivative(parameter)
+        third_derivative = self._coordinates[3](self._bounded(parameter))
+        logging.debug(
+            "Calculated third derivative of %s from parameter %f.",
+            third_derivative,
+            parameter,
+        )
+        return third_derivative
 
     def curvature_at(self, parameter: float) -> float:
         r"""This calculates the curvature of the curve at parameter.
@@ -171,8 +220,8 @@ class AnalyticCurve:
         where k is curvature, t is parameter, r is the radius vector,
         and \times is the vector (cross) product.
         """
-        first_derivative: npt.ArrayLike = self._first_derivative(parameter)
-        second_derivative: npt.ArrayLike = self._second_derivative(parameter)
+        first_derivative: npt.ArrayLike = self.first_derivative_at(parameter)
+        second_derivative: npt.ArrayLike = self.second_derivative_at(parameter)
         logging.debug(
             "Calculating curvature of a curve with first derivative %s "
             "and second derivative %s.",
@@ -218,9 +267,9 @@ class AnalyticCurve:
         \times is the vector (cross) product, and \cdot is the scalar
         (dot) product.
         """
-        first_derivative: npt.ArrayLike = self._first_derivative(parameter)
-        second_derivative: npt.ArrayLike = self._second_derivative(parameter)
-        third_derivative: npt.ArrayLike = self._third_derivative(parameter)
+        first_derivative: npt.ArrayLike = self.first_derivative_at(parameter)
+        second_derivative: npt.ArrayLike = self.second_derivative_at(parameter)
+        third_derivative: npt.ArrayLike = self.third_derivative_at(parameter)
         logging.debug(
             "Calculating torsion of a curve with first derivative %s, "
             "second derivative %s, and third derivative %s.",
@@ -266,7 +315,7 @@ class AnalyticCurve:
         where T is the tangent vector, t is parameter, and r is the
         radius vector.
         """
-        first_derivative: npt.ArrayLike = self._first_derivative(parameter)
+        first_derivative: npt.ArrayLike = self.first_derivative_at(parameter)
         logging.debug(
             "Calculating the tangent vector of a curve with first "
             "derivative %s.",
@@ -320,8 +369,8 @@ class AnalyticCurve:
         the zero vector, the normal vector will be made to be the zero
         vector.
         """
-        first_derivative: npt.ArrayLike = self._first_derivative(parameter)
-        second_derivative: npt.ArrayLike = self._second_derivative(parameter)
+        first_derivative: npt.ArrayLike = self.first_derivative_at(parameter)
+        second_derivative: npt.ArrayLike = self.second_derivative_at(parameter)
         logging.debug(
             "Calculating the normal vector of a curve with first "
             "derivative %s and second derivative %s.",
@@ -377,8 +426,8 @@ class AnalyticCurve:
         where b is torsion, t is parameter, r is the radius vector, k is
         the curvature at t, and \times is the vector (cross) product.
         """
-        first_derivative: npt.ArrayLike = self._first_derivative(parameter)
-        second_derivative: npt.ArrayLike = self._second_derivative(parameter)
+        first_derivative: npt.ArrayLike = self.first_derivative_at(parameter)
+        second_derivative: npt.ArrayLike = self.second_derivative_at(parameter)
         logging.debug(
             "Calculating the binormal vector of a curve with first "
             "derivative %s and second derivative %s.",
@@ -404,19 +453,48 @@ class AnalyticCurve:
         )
         return binormal_vector
 
-    def _check_bounds(self, parameter: float) -> None:
+    def _bounded(self, parameter: float) -> float:
         """This compares the parameter to the upper and lower bounds,
         and if it's out of bounds, it raises the appropriate exception.
         """
+        if self._periodic:
+            modded_parameter = (
+                np.mod(parameter, self._upper_bound - self._lower_bound)
+                + self._lower_bound
+            )
+            logging.debug(
+                "Parameter %f is out of bounds on a periodic curve.  "
+                "Moving it to %f.",
+                parameter,
+                modded_parameter,
+            )
+            return modded_parameter
+
+        if self._lower_bound <= parameter <= self._upper_bound:
+            return parameter
+
         if parameter > self._upper_bound:
+            logging.debug(
+                "Parameter %f is greater than the maximum parameter "
+                "%f.  Raising AboveBounds.",
+                parameter,
+                self._upper_bound,
+            )
             raise self.AboveBounds(
                 f"Parameter {parameter} is greater than the upper bound "
                 f"parameter {self._upper_bound}.",
                 self._upper_bound,
             )
         if parameter < self._lower_bound:
+            logging.debug(
+                "Parameter %f is less than the maximum parameter "
+                "%f.  Raising BelowBounds.",
+                parameter,
+                self._lower_bound,
+            )
             raise self.BelowBounds(
                 f"Parameter {parameter} is less than the lower bound "
                 f"parameter {self._lower_bound}.",
                 self._lower_bound,
             )
+        return parameter

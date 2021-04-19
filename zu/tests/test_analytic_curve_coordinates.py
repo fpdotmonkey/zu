@@ -2,18 +2,28 @@
 Unit tests to verify that analytic curves are well-behaved.
 """
 
-# pylint: disable=too-many-lines
-
 import logging
 
-import numpy as np
+import numpy as np  # pylint: disable=duplicate-code
+import pytest  # pylint: disable=duplicate-code
 
-from zu.analytic_curve import AnalyticCurve
+from zu.analytic_curve import AnalyticCurve  # pylint: disable=duplicate-code
 
 
-npt = np.typing
+npt = np.typing  # pylint: disable=duplicate-code
 
-logging.getLogger().setLevel(logging.DEBUG)
+logging.getLogger().setLevel(logging.DEBUG)  # pylint: disable=duplicate-code
+
+
+# not enough coordinates
+
+
+def test_not_enough_coordinates_leads_to_exception() -> None:
+    """If not enough coordinates are given to do all the calculating,
+    then an exception should be raised.
+    """
+    with pytest.raises(ValueError):
+        AnalyticCurve((lambda parameter: np.array([0, 0, 0]),))  # type: ignore
 
 
 # radius
@@ -26,36 +36,18 @@ def test_constant_curve_radius() -> None:
     """
     position = [0.0, 0.0, 0.0]
 
-    def constant_curve_radius(parameter: float) -> npt.ArrayLike:
-        """Constant curve at the origin."""
-        del parameter
-        return np.array(position)
-
-    def constant_curve_first_derivative(parameter: float) -> npt.ArrayLike:
-        """First derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_second_derivative(parameter: float) -> npt.ArrayLike:
-        """Second derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_third_derivative(parameter: float) -> npt.ArrayLike:
-        """Third derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    curve = AnalyticCurve(
-        constant_curve_radius,
-        constant_curve_first_derivative,
-        constant_curve_second_derivative,
-        constant_curve_third_derivative,
+    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+        (
+            lambda parameter: np.array(position),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
-            curve.radius_at(parameter), constant_curve_radius(parameter)
+            curve.radius_at(parameter), np.array(position)
         ), (
             "Fails to say that a constant curve defined over all real "
             f"parameters is equal to that constant at {parameter}."
@@ -69,35 +61,18 @@ def test_linear_single_axis_curve_radius() -> None:
     """
     velocity = [1.0, 0.0, 0.0]
 
-    def linear_curve_radius(parameter: float) -> npt.ArrayLike:
-        """Linear curve."""
-        return parameter * np.array(velocity)
-
-    def linear_curve_first_derivative(parameter: float) -> npt.ArrayLike:
-        """Derivative of a linear curve."""
-        del parameter
-        return np.array(velocity)
-
-    def linear_curve_second_derivative(parameter: float) -> npt.ArrayLike:
-        """Second derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def linear_curve_third_derivative(parameter: float) -> npt.ArrayLike:
-        """Third derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    curve = AnalyticCurve(
-        linear_curve_radius,
-        linear_curve_first_derivative,
-        linear_curve_second_derivative,
-        linear_curve_third_derivative,
+    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+        (
+            lambda parameter: parameter * np.array(velocity),
+            lambda parameter: np.array(velocity),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
-            curve.radius_at(parameter), linear_curve_radius(parameter)
+            curve.radius_at(parameter), parameter * np.array(velocity)
         ), (
             "Fails to say that the radius of a linear curve defined "
             "over all real parameters is equal to its velocity "
@@ -112,34 +87,19 @@ def test_quadratic_single_axis_curve_radius() -> None:
     """
     acceleration = [1.0, 0.0, 0.0]
 
-    def quadratic_curve_radius(parameter: float) -> npt.ArrayLike:
-        """Linear curve."""
-        return 0.5 * (parameter ** 2) * np.array(acceleration)
-
-    def quadratic_curve_first_derivative(parameter: float) -> npt.ArrayLike:
-        """Derivative of a quadratic curve."""
-        return parameter * np.array(acceleration)
-
-    def quadratic_curve_second_derivative(parameter: float) -> npt.ArrayLike:
-        """Second derivative of a quadratic curve."""
-        del parameter
-        return np.array(acceleration)
-
-    def quadratic_curve_third_derivative(parameter: float) -> npt.ArrayLike:
-        """Third derivative of a quadratic curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    curve = AnalyticCurve(
-        quadratic_curve_radius,
-        quadratic_curve_first_derivative,
-        quadratic_curve_second_derivative,
-        quadratic_curve_third_derivative,
+    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+        (
+            lambda parameter: 0.5 * (parameter ** 2) * np.array(acceleration),
+            lambda parameter: parameter * np.array(acceleration),
+            lambda parameter: np.array(acceleration),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
-            curve.radius_at(parameter), quadratic_curve_radius(parameter)
+            curve.radius_at(parameter),
+            0.5 * (parameter ** 2) * np.array(acceleration),
         ), (
             "Fails to say that the radius of a constant-acceleration "
             "curve defined over all real parameters is equal to its "
@@ -155,36 +115,19 @@ def test_constant_not_origin_curve_radius() -> None:
     """
     position = [1.61, -2.71, 3.14]
 
-    def constant_curve_radius(parameter: float) -> npt.ArrayLike:
-        """Constant curve not at the origin."""
-        del parameter
-        return np.array(position)
-
-    def constant_curve_first_derivative(parameter: float) -> npt.ArrayLike:
-        """Derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_second_derivative(parameter: float) -> npt.ArrayLike:
-        """Second derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_third_derivative(parameter: float) -> npt.ArrayLike:
-        """Third derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    curve = AnalyticCurve(
-        constant_curve_radius,
-        constant_curve_first_derivative,
-        constant_curve_second_derivative,
-        constant_curve_third_derivative,
+    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+        (
+            lambda parameter: np.array(position),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
-            curve.radius_at(parameter), constant_curve_radius(parameter)
+            curve.radius_at(parameter),
+            np.array(position),
         ), (
             "Fails to say that the radius of a constant curve not on "
             "the origin defined over all real parameters is equal to "
@@ -199,35 +142,19 @@ def test_linear_off_axis_curve_radius() -> None:
     """
     velocity = [1.61, -2.71, 3.14]
 
-    def linear_curve_radius(parameter: float) -> npt.ArrayLike:
-        """Linear curve."""
-        return parameter * np.array(velocity)
-
-    def linear_curve_first_derivative(parameter: float) -> npt.ArrayLike:
-        """Derivative of a linear curve."""
-        del parameter
-        return np.array(velocity)
-
-    def linear_curve_second_derivative(parameter: float) -> npt.ArrayLike:
-        """Second derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def linear_curve_third_derivative(parameter: float) -> npt.ArrayLike:
-        """Third derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    curve = AnalyticCurve(
-        linear_curve_radius,
-        linear_curve_first_derivative,
-        linear_curve_second_derivative,
-        linear_curve_third_derivative,
+    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+        (
+            lambda parameter: parameter * np.array(velocity),
+            lambda parameter: np.array(velocity),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
-            curve.radius_at(parameter), linear_curve_radius(parameter)
+            curve.radius_at(parameter),
+            parameter * np.array(velocity),
         ), (
             "Fails to say that the radius of a linear curve defined "
             "over all real parameters is equal to its velocity "
@@ -242,34 +169,19 @@ def test_quadratic_off_axis_curve_radius() -> None:
     """
     acceleration = [1.61, -2.71, 3.14]
 
-    def quadratic_curve_radius(parameter: float) -> npt.ArrayLike:
-        """Linear curve."""
-        return 0.5 * (parameter ** 2) * np.array(acceleration)
-
-    def quadratic_curve_first_derivative(parameter: float) -> npt.ArrayLike:
-        """Derivative of a quadratic curve."""
-        return parameter * np.array(acceleration)
-
-    def quadratic_curve_second_derivative(parameter: float) -> npt.ArrayLike:
-        """Second derivative of a quadratic curve."""
-        del parameter
-        return np.array(acceleration)
-
-    def quadratic_curve_third_derivative(parameter: float) -> npt.ArrayLike:
-        """Third derivative of a quadratic curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    curve = AnalyticCurve(
-        quadratic_curve_radius,
-        quadratic_curve_first_derivative,
-        quadratic_curve_second_derivative,
-        quadratic_curve_third_derivative,
+    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+        (
+            lambda parameter: 0.5 * (parameter ** 2) * np.array(acceleration),
+            lambda parameter: parameter * np.array(acceleration),
+            lambda parameter: np.array(acceleration),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
-            curve.radius_at(parameter), quadratic_curve_radius(parameter)
+            curve.radius_at(parameter),
+            0.5 * (parameter ** 2) * np.array(acceleration),
         ), (
             "Fails to say that the radius of a constant-acceleration "
             "curve defined over all real parameters is equal to its "
@@ -281,32 +193,27 @@ def test_quadratic_off_axis_curve_radius() -> None:
 def test_non_linear_curve_radius() -> None:
     """Test that a non-linear curve gives the correct radius."""
 
-    def curve_radius(parameter: float) -> npt.ArrayLike:
-        """Helix radius."""
-        return np.array([np.cos(parameter), np.sin(parameter), parameter])
-
-    def curve_first_derivative(parameter: float) -> npt.ArrayLike:
-        """Helix first derivative."""
-        return np.array([-np.sin(parameter), np.cos(parameter), 1.0])
-
-    def curve_second_derivative(parameter: float) -> npt.ArrayLike:
-        """Helix second derivative."""
-        return np.array([-np.cos(parameter), -np.sin(parameter), 0.0])
-
-    def curve_third_derivative(parameter: float) -> npt.ArrayLike:
-        """Third derivative of a constant curve."""
-        return np.array([np.sin(parameter), -np.cos(parameter), 0.0])
-
-    curve = AnalyticCurve(
-        curve_radius,
-        curve_first_derivative,
-        curve_second_derivative,
-        curve_third_derivative,
+    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+        (
+            lambda parameter: np.array(
+                [np.cos(parameter), np.sin(parameter), parameter]
+            ),
+            lambda parameter: np.array(
+                [-np.sin(parameter), np.cos(parameter), 1.0]
+            ),
+            lambda parameter: np.array(
+                [-np.cos(parameter), -np.sin(parameter), 0.0]
+            ),
+            lambda parameter: np.array(
+                [np.sin(parameter), -np.cos(parameter), 0.0]
+            ),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
-            curve.radius_at(parameter), curve_radius(parameter)
+            curve.radius_at(parameter),
+            np.array([np.cos(parameter), np.sin(parameter), parameter]),
         ), (
             "Fails to say that the a non-linear curve defined over all "
             "real parameters has the correct radius at parameter "
@@ -324,37 +231,19 @@ def test_constant_curve_first_derivative() -> None:
     """
     position = [0.0, 0.0, 0.0]
 
-    def constant_curve_radius(parameter: float) -> npt.ArrayLike:
-        """Constant curve at the origin."""
-        del parameter
-        return np.array(position)
-
-    def constant_curve_first_derivative(parameter: float) -> npt.ArrayLike:
-        """Derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_second_derivative(parameter: float) -> npt.ArrayLike:
-        """Second derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_third_derivative(parameter: float) -> npt.ArrayLike:
-        """Third derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    curve = AnalyticCurve(
-        constant_curve_radius,
-        constant_curve_first_derivative,
-        constant_curve_second_derivative,
-        constant_curve_third_derivative,
+    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+        (
+            lambda parameter: np.array(position),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
             curve.first_derivative_at(parameter),
-            constant_curve_first_derivative(parameter),
+            np.array([0.0, 0.0, 0.0]),
         ), (
             "Fails to say that the first derivative of a constant curve "
             "defined over all real parameters is equal to zero."
@@ -368,36 +257,19 @@ def test_linear_single_axis_curve_first_derivative() -> None:
     """
     velocity = [1.0, 0.0, 0.0]
 
-    def linear_curve_radius(parameter: float) -> npt.ArrayLike:
-        """Linear curve."""
-        return parameter * np.array(velocity)
-
-    def linear_curve_first_derivative(parameter: float) -> npt.ArrayLike:
-        """Derivative of a linear curve."""
-        del parameter
-        return np.array(velocity)
-
-    def linear_curve_second_derivative(parameter: float) -> npt.ArrayLike:
-        """Second derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def linear_curve_third_derivative(parameter: float) -> npt.ArrayLike:
-        """Third derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    curve = AnalyticCurve(
-        linear_curve_radius,
-        linear_curve_first_derivative,
-        linear_curve_second_derivative,
-        linear_curve_third_derivative,
+    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+        (
+            lambda parameter: parameter * np.array(velocity),
+            lambda parameter: np.array(velocity),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
             curve.first_derivative_at(parameter),
-            linear_curve_first_derivative(parameter),
+            np.array(velocity),
         ), (
             "Fails to say that the first derivative of a linear curve "
             "defined over all real parameters is equal to its velocity "
@@ -412,35 +284,19 @@ def test_quadratic_single_axis_curve_first_derivative() -> None:
     """
     acceleration = [1.0, 0.0, 0.0]
 
-    def quadratic_curve_radius(parameter: float) -> npt.ArrayLike:
-        """Linear curve."""
-        return 0.5 * (parameter ** 2) * np.array(acceleration)
-
-    def quadratic_curve_first_derivative(parameter: float) -> npt.ArrayLike:
-        """Derivative of a quadratic curve."""
-        return parameter * np.array(acceleration)
-
-    def quadratic_curve_second_derivative(parameter: float) -> npt.ArrayLike:
-        """Second derivative of a quadratic curve."""
-        del parameter
-        return np.array(acceleration)
-
-    def quadratic_curve_third_derivative(parameter: float) -> npt.ArrayLike:
-        """Third derivative of a quadratic curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    curve = AnalyticCurve(
-        quadratic_curve_radius,
-        quadratic_curve_first_derivative,
-        quadratic_curve_second_derivative,
-        quadratic_curve_third_derivative,
+    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+        (
+            lambda parameter: 0.5 * (parameter ** 2) * np.array(acceleration),
+            lambda parameter: parameter * np.array(acceleration),
+            lambda parameter: np.array(acceleration),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
             curve.first_derivative_at(parameter),
-            quadratic_curve_first_derivative(parameter),
+            parameter * np.array(acceleration),
         ), (
             "Fails to say that the first derivative of a "
             "constant-acceleration curve defined over all real "
@@ -456,37 +312,19 @@ def test_constant_not_origin_curve_first_derivative() -> None:
     """
     position = [1.61, -2.71, 3.14]
 
-    def constant_curve_radius(parameter: float) -> npt.ArrayLike:
-        """Constant curve not at the origin."""
-        del parameter
-        return np.array(position)
-
-    def constant_curve_first_derivative(parameter: float) -> npt.ArrayLike:
-        """Derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_second_derivative(parameter: float) -> npt.ArrayLike:
-        """Second derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_third_derivative(parameter: float) -> npt.ArrayLike:
-        """Third derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    curve = AnalyticCurve(
-        constant_curve_radius,
-        constant_curve_first_derivative,
-        constant_curve_second_derivative,
-        constant_curve_third_derivative,
+    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+        (
+            lambda parameter: np.array(position),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
             curve.first_derivative_at(parameter),
-            constant_curve_first_derivative(parameter),
+            np.array([0.0, 0.0, 0.0]),
         ), (
             "Fails to say that the first derivative of a constant curve "
             "not on the origin defined over all real parameters is "
@@ -501,36 +339,19 @@ def test_linear_off_axis_curve_first_derivative() -> None:
     """
     velocity = [1.61, -2.71, 3.14]
 
-    def linear_curve_radius(parameter: float) -> npt.ArrayLike:
-        """Linear curve."""
-        return parameter * np.array(velocity)
-
-    def linear_curve_first_derivative(parameter: float) -> npt.ArrayLike:
-        """Derivative of a linear curve."""
-        del parameter
-        return np.array(velocity)
-
-    def linear_curve_second_derivative(parameter: float) -> npt.ArrayLike:
-        """Second derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def linear_curve_third_derivative(parameter: float) -> npt.ArrayLike:
-        """Third derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    curve = AnalyticCurve(
-        linear_curve_radius,
-        linear_curve_first_derivative,
-        linear_curve_second_derivative,
-        linear_curve_third_derivative,
+    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+        (
+            lambda parameter: parameter * np.array(velocity),
+            lambda parameter: np.array(velocity),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
             curve.first_derivative_at(parameter),
-            linear_curve_first_derivative(parameter),
+            np.array(velocity),
         ), (
             "Fails to say that the first derivative of a linear curve "
             "defined over all real parameters is equal to its velocity "
@@ -545,35 +366,19 @@ def test_quadratic_off_axis_curve_first_derivative() -> None:
     """
     acceleration = [1.61, -2.71, 3.14]
 
-    def quadratic_curve_radius(parameter: float) -> npt.ArrayLike:
-        """Linear curve."""
-        return 0.5 * (parameter ** 2) * np.array(acceleration)
-
-    def quadratic_curve_first_derivative(parameter: float) -> npt.ArrayLike:
-        """Derivative of a quadratic curve."""
-        return parameter * np.array(acceleration)
-
-    def quadratic_curve_second_derivative(parameter: float) -> npt.ArrayLike:
-        """Second derivative of a quadratic curve."""
-        del parameter
-        return np.array(acceleration)
-
-    def quadratic_curve_third_derivative(parameter: float) -> npt.ArrayLike:
-        """Third derivative of a quadratic curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    curve = AnalyticCurve(
-        quadratic_curve_radius,
-        quadratic_curve_first_derivative,
-        quadratic_curve_second_derivative,
-        quadratic_curve_third_derivative,
+    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+        (
+            lambda parameter: 0.5 * (parameter ** 2) * np.array(acceleration),
+            lambda parameter: parameter * np.array(acceleration),
+            lambda parameter: np.array(acceleration),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
             curve.first_derivative_at(parameter),
-            quadratic_curve_first_derivative(parameter),
+            parameter * np.array(acceleration),
         ), (
             "Fails to say that a constant-acceleration curve defined "
             "over all real parameters is equal to its acceleration "
@@ -583,34 +388,27 @@ def test_quadratic_off_axis_curve_first_derivative() -> None:
 
 def test_non_linear_curve_first_derivative() -> None:
     """Test that a non-linear curve gives the correct first derivative."""
-
-    def curve_radius(parameter: float) -> npt.ArrayLike:
-        """Helix radius."""
-        return np.array([np.cos(parameter), np.sin(parameter), parameter])
-
-    def curve_first_derivative(parameter: float) -> npt.ArrayLike:
-        """Helix first derivative."""
-        return np.array([-np.sin(parameter), np.cos(parameter), 1.0])
-
-    def curve_second_derivative(parameter: float) -> npt.ArrayLike:
-        """Helix second derivative."""
-        return np.array([-np.cos(parameter), -np.sin(parameter), 0.0])
-
-    def curve_third_derivative(parameter: float) -> npt.ArrayLike:
-        """Third derivative of a constant curve."""
-        return np.array([np.sin(parameter), -np.cos(parameter), 0.0])
-
-    curve = AnalyticCurve(
-        curve_radius,
-        curve_first_derivative,
-        curve_second_derivative,
-        curve_third_derivative,
+    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+        (
+            lambda parameter: np.array(
+                [np.cos(parameter), np.sin(parameter), parameter]
+            ),
+            lambda parameter: np.array(
+                [-np.sin(parameter), np.cos(parameter), 1.0]
+            ),
+            lambda parameter: np.array(
+                [-np.cos(parameter), -np.sin(parameter), 0.0]
+            ),
+            lambda parameter: np.array(
+                [np.sin(parameter), -np.cos(parameter), 0.0]
+            ),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
             curve.first_derivative_at(parameter),
-            curve_first_derivative(parameter),
+            np.array([-np.sin(parameter), np.cos(parameter), 1.0]),
         ), (
             "Fails to say that a non-linear curve defined over all real "
             "parameters has the correct first derivative at parameter "
@@ -628,37 +426,19 @@ def test_constant_curve_second_derivative() -> None:
     """
     position = [0.0, 0.0, 0.0]
 
-    def constant_curve_radius(parameter: float) -> npt.ArrayLike:
-        """Constant curve at the origin."""
-        del parameter
-        return np.array(position)
-
-    def constant_curve_first_derivative(parameter: float) -> npt.ArrayLike:
-        """Derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_second_derivative(parameter: float) -> npt.ArrayLike:
-        """Second derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_third_derivative(parameter: float) -> npt.ArrayLike:
-        """Third derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    curve = AnalyticCurve(
-        constant_curve_radius,
-        constant_curve_first_derivative,
-        constant_curve_second_derivative,
-        constant_curve_third_derivative,
+    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+        (
+            lambda parameter: np.array(position),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
             curve.second_derivative_at(parameter),
-            constant_curve_second_derivative(parameter),
+            np.array([0.0, 0.0, 0.0]),
         ), (
             "Fails to say that the second derivative of a constant "
             "curve defined over all real parameters is equal to zero."
@@ -672,36 +452,19 @@ def test_linear_single_axis_curve_second_derivative() -> None:
     """
     velocity = [1.0, 0.0, 0.0]
 
-    def linear_curve_radius(parameter: float) -> npt.ArrayLike:
-        """Linear curve."""
-        return parameter * np.array(velocity)
-
-    def linear_curve_first_derivative(parameter: float) -> npt.ArrayLike:
-        """Derivative of a linear curve."""
-        del parameter
-        return np.array(velocity)
-
-    def linear_curve_second_derivative(parameter: float) -> npt.ArrayLike:
-        """Second derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def linear_curve_third_derivative(parameter: float) -> npt.ArrayLike:
-        """Third derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    curve = AnalyticCurve(
-        linear_curve_radius,
-        linear_curve_first_derivative,
-        linear_curve_second_derivative,
-        linear_curve_third_derivative,
+    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+        (
+            lambda parameter: parameter * np.array(velocity),
+            lambda parameter: np.array(velocity),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
             curve.second_derivative_at(parameter),
-            linear_curve_second_derivative(parameter),
+            np.array([0.0, 0.0, 0.0]),
         ), (
             "Fails to say that the second derivative of a linear curve "
             "defined over all real parameters is equal to zero."
@@ -715,35 +478,19 @@ def test_quadratic_single_axis_curve_second_derivative() -> None:
     """
     acceleration = [1.0, 0.0, 0.0]
 
-    def quadratic_curve_radius(parameter: float) -> npt.ArrayLike:
-        """Linear curve."""
-        return 0.5 * (parameter ** 2) * np.array(acceleration)
-
-    def quadratic_curve_first_derivative(parameter: float) -> npt.ArrayLike:
-        """Derivative of a quadratic curve."""
-        return parameter * np.array(acceleration)
-
-    def quadratic_curve_second_derivative(parameter: float) -> npt.ArrayLike:
-        """Second derivative of a quadratic curve."""
-        del parameter
-        return np.array(acceleration)
-
-    def quadratic_curve_third_derivative(parameter: float) -> npt.ArrayLike:
-        """Third derivative of a quadratic curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    curve = AnalyticCurve(
-        quadratic_curve_radius,
-        quadratic_curve_first_derivative,
-        quadratic_curve_second_derivative,
-        quadratic_curve_third_derivative,
+    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+        (
+            lambda parameter: 0.5 * (parameter ** 2) * np.array(acceleration),
+            lambda parameter: parameter * np.array(acceleration),
+            lambda parameter: np.array(acceleration),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
             curve.second_derivative_at(parameter),
-            quadratic_curve_second_derivative(parameter),
+            np.array(acceleration),
         ), (
             "Fails to say that the second derivative of a "
             "constant-acceleration curve defined over all real "
@@ -758,37 +505,19 @@ def test_constant_not_origin_curve_second_derivative() -> None:
     """
     position = [1.61, -2.71, 3.14]
 
-    def constant_curve_radius(parameter: float) -> npt.ArrayLike:
-        """Constant curve not at the origin."""
-        del parameter
-        return np.array(position)
-
-    def constant_curve_first_derivative(parameter: float) -> npt.ArrayLike:
-        """Derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_second_derivative(parameter: float) -> npt.ArrayLike:
-        """Second derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_third_derivative(parameter: float) -> npt.ArrayLike:
-        """Third derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    curve = AnalyticCurve(
-        constant_curve_radius,
-        constant_curve_first_derivative,
-        constant_curve_second_derivative,
-        constant_curve_third_derivative,
+    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+        (
+            lambda parameter: np.array(position),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
             curve.second_derivative_at(parameter),
-            constant_curve_second_derivative(parameter),
+            np.array([0.0, 0.0, 0.0]),
         ), (
             "Fails to say that the second derivative of a constant "
             "curve not on the origin defined over all real parameters "
@@ -803,36 +532,19 @@ def test_linear_off_axis_curve_second_derivative() -> None:
     """
     velocity = [1.61, -2.71, 3.14]
 
-    def linear_curve_radius(parameter: float) -> npt.ArrayLike:
-        """Linear curve."""
-        return parameter * np.array(velocity)
-
-    def linear_curve_first_derivative(parameter: float) -> npt.ArrayLike:
-        """Derivative of a linear curve."""
-        del parameter
-        return np.array(velocity)
-
-    def linear_curve_second_derivative(parameter: float) -> npt.ArrayLike:
-        """Second derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def linear_curve_third_derivative(parameter: float) -> npt.ArrayLike:
-        """Third derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    curve = AnalyticCurve(
-        linear_curve_radius,
-        linear_curve_first_derivative,
-        linear_curve_second_derivative,
-        linear_curve_third_derivative,
+    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+        (
+            lambda parameter: parameter * np.array(velocity),
+            lambda parameter: np.array(velocity),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
             curve.second_derivative_at(parameter),
-            linear_curve_second_derivative(parameter),
+            np.array([0.0, 0.0, 0.0]),
         ), (
             "Fails to say that the second derivative of a linear curve "
             "defined over all real parameters is equal to zero."
@@ -846,35 +558,19 @@ def test_quadratic_off_axis_curve_second_derivative() -> None:
     """
     acceleration = [1.61, -2.71, 3.14]
 
-    def quadratic_curve_radius(parameter: float) -> npt.ArrayLike:
-        """Linear curve."""
-        return 0.5 * (parameter ** 2) * np.array(acceleration)
-
-    def quadratic_curve_first_derivative(parameter: float) -> npt.ArrayLike:
-        """Derivative of a quadratic curve."""
-        return parameter * np.array(acceleration)
-
-    def quadratic_curve_second_derivative(parameter: float) -> npt.ArrayLike:
-        """Second derivative of a quadratic curve."""
-        del parameter
-        return np.array(acceleration)
-
-    def quadratic_curve_third_derivative(parameter: float) -> npt.ArrayLike:
-        """Third derivative of a quadratic curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    curve = AnalyticCurve(
-        quadratic_curve_radius,
-        quadratic_curve_first_derivative,
-        quadratic_curve_second_derivative,
-        quadratic_curve_third_derivative,
+    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+        (
+            lambda parameter: 0.5 * (parameter ** 2) * np.array(acceleration),
+            lambda parameter: parameter * np.array(acceleration),
+            lambda parameter: np.array(acceleration),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
             curve.second_derivative_at(parameter),
-            quadratic_curve_second_derivative(parameter),
+            np.array(acceleration),
         ), (
             "Fails to say that the second derivative of a "
             "constant-acceleration curve defined over all real "
@@ -886,34 +582,27 @@ def test_non_linear_curve_second_derivative() -> None:
     """Test that a non-linear curve gives the correct second
     derivative.
     """
-
-    def curve_radius(parameter: float) -> npt.ArrayLike:
-        """Helix radius."""
-        return np.array([np.cos(parameter), np.sin(parameter), parameter])
-
-    def curve_first_derivative(parameter: float) -> npt.ArrayLike:
-        """Helix first derivative."""
-        return np.array([-np.sin(parameter), np.cos(parameter), 1.0])
-
-    def curve_second_derivative(parameter: float) -> npt.ArrayLike:
-        """Helix second derivative."""
-        return np.array([-np.cos(parameter), -np.sin(parameter), 0.0])
-
-    def curve_third_derivative(parameter: float) -> npt.ArrayLike:
-        """Helix third derivative."""
-        return np.array([np.sin(parameter), -np.cos(parameter), 0.0])
-
-    curve = AnalyticCurve(
-        curve_radius,
-        curve_first_derivative,
-        curve_second_derivative,
-        curve_third_derivative,
+    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+        (
+            lambda parameter: np.array(
+                [np.cos(parameter), np.sin(parameter), parameter]
+            ),
+            lambda parameter: np.array(
+                [-np.sin(parameter), np.cos(parameter), 1.0]
+            ),
+            lambda parameter: np.array(
+                [-np.cos(parameter), -np.sin(parameter), 0.0]
+            ),
+            lambda parameter: np.array(
+                [np.sin(parameter), -np.cos(parameter), 0.0]
+            ),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
             curve.second_derivative_at(parameter),
-            curve_second_derivative(parameter),
+            np.array([-np.cos(parameter), -np.sin(parameter), 0.0]),
         ), (
             "Fails to say that a non-linear curve defined over all real "
             "parameters has the correct second derivative at parameter "
@@ -931,37 +620,19 @@ def test_constant_curve_third_derivative() -> None:
     """
     position = [0.0, 0.0, 0.0]
 
-    def constant_curve_radius(parameter: float) -> npt.ArrayLike:
-        """Constant curve at the origin."""
-        del parameter
-        return np.array(position)
-
-    def constant_curve_first_derivative(parameter: float) -> npt.ArrayLike:
-        """Derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_second_derivative(parameter: float) -> npt.ArrayLike:
-        """Second derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_third_derivative(parameter: float) -> npt.ArrayLike:
-        """Third derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    curve = AnalyticCurve(
-        constant_curve_radius,
-        constant_curve_first_derivative,
-        constant_curve_second_derivative,
-        constant_curve_third_derivative,
+    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+        (
+            lambda parameter: np.array(position),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
             curve.second_derivative_at(parameter),
-            constant_curve_second_derivative(parameter),
+            np.array([0.0, 0.0, 0.0]),
         ), (
             "Fails to say that the third derivative of a constant "
             "curve defined over all real parameters is equal to zero."
@@ -975,36 +646,19 @@ def test_linear_single_axis_curve_third_derivative() -> None:
     """
     velocity = [1.0, 0.0, 0.0]
 
-    def linear_curve_radius(parameter: float) -> npt.ArrayLike:
-        """Linear curve."""
-        return parameter * np.array(velocity)
-
-    def linear_curve_first_derivative(parameter: float) -> npt.ArrayLike:
-        """Derivative of a linear curve."""
-        del parameter
-        return np.array(velocity)
-
-    def linear_curve_second_derivative(parameter: float) -> npt.ArrayLike:
-        """Second derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def linear_curve_third_derivative(parameter: float) -> npt.ArrayLike:
-        """Third derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    curve = AnalyticCurve(
-        linear_curve_radius,
-        linear_curve_first_derivative,
-        linear_curve_second_derivative,
-        linear_curve_third_derivative,
+    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+        (
+            lambda parameter: parameter * np.array(velocity),
+            lambda parameter: np.array(velocity),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
             curve.third_derivative_at(parameter),
-            linear_curve_third_derivative(parameter),
+            np.array([0.0, 0.0, 0.0]),
         ), (
             "Fails to say that the third derivative of a linear curve "
             "defined over all real parameters is equal to zero."
@@ -1018,35 +672,19 @@ def test_quadratic_single_axis_curve_third_derivative() -> None:
     """
     acceleration = [1.0, 0.0, 0.0]
 
-    def quadratic_curve_radius(parameter: float) -> npt.ArrayLike:
-        """Linear curve."""
-        return 0.5 * (parameter ** 2) * np.array(acceleration)
-
-    def quadratic_curve_first_derivative(parameter: float) -> npt.ArrayLike:
-        """Derivative of a quadratic curve."""
-        return parameter * np.array(acceleration)
-
-    def quadratic_curve_second_derivative(parameter: float) -> npt.ArrayLike:
-        """Second derivative of a quadratic curve."""
-        del parameter
-        return np.array(acceleration)
-
-    def quadratic_curve_third_derivative(parameter: float) -> npt.ArrayLike:
-        """Third derivative of a quadratic curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    curve = AnalyticCurve(
-        quadratic_curve_radius,
-        quadratic_curve_first_derivative,
-        quadratic_curve_second_derivative,
-        quadratic_curve_third_derivative,
+    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+        (
+            lambda parameter: 0.5 * (parameter ** 2) * np.array(acceleration),
+            lambda parameter: parameter * np.array(acceleration),
+            lambda parameter: np.array(acceleration),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
             curve.third_derivative_at(parameter),
-            quadratic_curve_third_derivative(parameter),
+            np.array([0.0, 0.0, 0.0]),
         ), (
             "Fails to say that the third derivative of a "
             "constant-acceleration curve defined over all real "
@@ -1061,37 +699,19 @@ def test_constant_not_origin_curve_third_derivative() -> None:
     """
     position = [1.61, -2.71, 3.14]
 
-    def constant_curve_radius(parameter: float) -> npt.ArrayLike:
-        """Constant curve not at the origin."""
-        del parameter
-        return np.array(position)
-
-    def constant_curve_first_derivative(parameter: float) -> npt.ArrayLike:
-        """Derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_second_derivative(parameter: float) -> npt.ArrayLike:
-        """Second derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_third_derivative(parameter: float) -> npt.ArrayLike:
-        """Third derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    curve = AnalyticCurve(
-        constant_curve_radius,
-        constant_curve_first_derivative,
-        constant_curve_second_derivative,
-        constant_curve_third_derivative,
+    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+        (
+            lambda parameter: np.array(position),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
             curve.third_derivative_at(parameter),
-            constant_curve_third_derivative(parameter),
+            np.array([0.0, 0.0, 0.0]),
         ), (
             "Fails to say that the third derivative of a constant "
             "curve not on the origin defined over all real parameters "
@@ -1106,36 +726,19 @@ def test_linear_off_axis_curve_third_derivative() -> None:
     """
     velocity = [1.61, -2.71, 3.14]
 
-    def linear_curve_radius(parameter: float) -> npt.ArrayLike:
-        """Linear curve."""
-        return parameter * np.array(velocity)
-
-    def linear_curve_first_derivative(parameter: float) -> npt.ArrayLike:
-        """Derivative of a linear curve."""
-        del parameter
-        return np.array(velocity)
-
-    def linear_curve_second_derivative(parameter: float) -> npt.ArrayLike:
-        """Second derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def linear_curve_third_derivative(parameter: float) -> npt.ArrayLike:
-        """Third derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    curve = AnalyticCurve(
-        linear_curve_radius,
-        linear_curve_first_derivative,
-        linear_curve_second_derivative,
-        linear_curve_third_derivative,
+    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+        (
+            lambda parameter: parameter * np.array(velocity),
+            lambda parameter: np.array(velocity),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
             curve.third_derivative_at(parameter),
-            linear_curve_third_derivative(parameter),
+            np.array([0.0, 0.0, 0.0]),
         ), (
             "Fails to say that the third derivative of a linear curve "
             "defined over all real parameters is equal to zero."
@@ -1149,35 +752,19 @@ def test_quadratic_off_axis_curve_third_derivative() -> None:
     """
     acceleration = [1.61, -2.71, 3.14]
 
-    def quadratic_curve_radius(parameter: float) -> npt.ArrayLike:
-        """Linear curve."""
-        return 0.5 * (parameter ** 2) * np.array(acceleration)
-
-    def quadratic_curve_first_derivative(parameter: float) -> npt.ArrayLike:
-        """Derivative of a quadratic curve."""
-        return parameter * np.array(acceleration)
-
-    def quadratic_curve_second_derivative(parameter: float) -> npt.ArrayLike:
-        """Second derivative of a quadratic curve."""
-        del parameter
-        return np.array(acceleration)
-
-    def quadratic_curve_third_derivative(parameter: float) -> npt.ArrayLike:
-        """Third derivative of a quadratic curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    curve = AnalyticCurve(
-        quadratic_curve_radius,
-        quadratic_curve_first_derivative,
-        quadratic_curve_second_derivative,
-        quadratic_curve_third_derivative,
+    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+        (
+            lambda parameter: 0.5 * (parameter ** 2) * np.array(acceleration),
+            lambda parameter: parameter * np.array(acceleration),
+            lambda parameter: np.array(acceleration),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
             curve.third_derivative_at(parameter),
-            quadratic_curve_third_derivative(parameter),
+            np.array([0.0, 0.0, 0.0]),
         ), (
             "Fails to say that the third derivative of a "
             "constant-acceleration curve defined over all real "
@@ -1192,34 +779,19 @@ def test_cubic_off_axis_curve_third_derivative() -> None:
     """
     jerk = [1.61, -2.71, 3.14]
 
-    def cubic_curve_radius(parameter: float) -> npt.ArrayLike:
-        """Cubic curve."""
-        return 1.0 / 6.0 * (parameter ** 3) * np.array(jerk)
-
-    def cubic_curve_first_derivative(parameter: float) -> npt.ArrayLike:
-        """Derivative of a cubic curve."""
-        return 0.5 * (parameter ** 2) * np.array(jerk)
-
-    def cubic_curve_second_derivative(parameter: float) -> npt.ArrayLike:
-        """Second derivative of a cubic curve."""
-        return parameter * np.array(jerk)
-
-    def cubic_curve_third_derivative(parameter: float) -> npt.ArrayLike:
-        """Third derivative of a cubic curve."""
-        del parameter
-        return np.array(jerk)
-
-    curve = AnalyticCurve(
-        cubic_curve_radius,
-        cubic_curve_first_derivative,
-        cubic_curve_second_derivative,
-        cubic_curve_third_derivative,
+    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+        (
+            lambda parameter: 1.0 / 6.0 * (parameter ** 3) * np.array(jerk),
+            lambda parameter: 0.5 * (parameter ** 2) * np.array(jerk),
+            lambda parameter: parameter * np.array(jerk),
+            lambda parameter: np.array(jerk),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
             curve.third_derivative_at(parameter),
-            cubic_curve_third_derivative(parameter),
+            np.array(jerk),
         ), (
             "Fails to say that the third derivative of a "
             "constant-jerk curve defined over all real parameters is "
@@ -1231,34 +803,27 @@ def test_non_linear_curve_third_derivative() -> None:
     """Test that a non-linear curve gives the correct third
     derivative.
     """
-
-    def curve_radius(parameter: float) -> npt.ArrayLike:
-        """Helix radius."""
-        return np.array([np.cos(parameter), np.sin(parameter), parameter])
-
-    def curve_first_derivative(parameter: float) -> npt.ArrayLike:
-        """Helix first derivative."""
-        return np.array([-np.sin(parameter), np.cos(parameter), 1.0])
-
-    def curve_second_derivative(parameter: float) -> npt.ArrayLike:
-        """Helix second derivative."""
-        return np.array([-np.cos(parameter), -np.sin(parameter), 0.0])
-
-    def curve_third_derivative(parameter: float) -> npt.ArrayLike:
-        """Helix third derivative."""
-        return np.array([np.sin(parameter), -np.cos(parameter), 0.0])
-
-    curve = AnalyticCurve(
-        curve_radius,
-        curve_first_derivative,
-        curve_second_derivative,
-        curve_third_derivative,
+    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+        (
+            lambda parameter: np.array(
+                [np.cos(parameter), np.sin(parameter), parameter]
+            ),
+            lambda parameter: np.array(
+                [-np.sin(parameter), np.cos(parameter), 1.0]
+            ),
+            lambda parameter: np.array(
+                [-np.cos(parameter), -np.sin(parameter), 0.0]
+            ),
+            lambda parameter: np.array(
+                [np.sin(parameter), -np.cos(parameter), 0.0]
+            ),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
         assert np.array_equal(
             curve.third_derivative_at(parameter),
-            curve_third_derivative(parameter),
+            np.array([np.sin(parameter), -np.cos(parameter), 0.0]),
         ), (
             "Fails to say that a non-linear curve defined over all real "
             "parameters has the correct third derivative at parameter "

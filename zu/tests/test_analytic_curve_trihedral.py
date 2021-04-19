@@ -28,39 +28,21 @@ def test_constant_curve_tangent_vector() -> None:
     """
     position = [0.0, 0.0, 0.0]  # pylint: disable=duplicate-code
 
-    def constant_curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Constant curve at the origin."""
-        del parameter
-        return np.array(position)
-
-    def constant_curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Second derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Third derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        constant_curve_radius,  # pylint: disable=duplicate-code
-        constant_curve_first_derivative,  # pylint: disable=duplicate-code
-        constant_curve_second_derivative,  # pylint: disable=duplicate-code
-        constant_curve_third_derivative,  # pylint: disable=duplicate-code
+        (
+            lambda parameter: np.array(
+                [position]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -79,38 +61,20 @@ def test_linear_single_axis_curve_tangent_vector() -> None:
     """
     velocity = [1.0, 0.0, 0.0]  # pylint: disable=duplicate-code
 
-    def linear_curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Linear curve."""
-        return parameter * np.array(velocity)
-
-    def linear_curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Derivative of a linear curve."""
-        del parameter
-        return np.array(velocity)
-
-    def linear_curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Second derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def linear_curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Third derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        linear_curve_radius,  # pylint: disable=duplicate-code
-        linear_curve_first_derivative,  # pylint: disable=duplicate-code
-        linear_curve_second_derivative,  # pylint: disable=duplicate-code
-        linear_curve_third_derivative,  # pylint: disable=duplicate-code
+        (
+            lambda parameter: parameter
+            * np.array(velocity),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                velocity
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -129,37 +93,20 @@ def test_quadratic_single_axis_curve_tangent_vector() -> None:
     """
     acceleration = [1.0, 0.0, 0.0]  # pylint: disable=duplicate-code
 
-    def quadratic_curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Linear curve."""
-        return 0.5 * (parameter ** 2) * np.array(acceleration)
-
-    def quadratic_curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Derivative of a quadratic curve."""
-        return parameter * np.array(acceleration)
-
-    def quadratic_curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Second derivative of a quadratic curve."""
-        del parameter
-        return np.array(acceleration)
-
-    def quadratic_curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Third derivative of a quadratic curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        quadratic_curve_radius,  # pylint: disable=duplicate-code
-        quadratic_curve_first_derivative,  # pylint: disable=duplicate-code
-        quadratic_curve_second_derivative,  # pylint: disable=duplicate-code
-        quadratic_curve_third_derivative,  # pylint: disable=duplicate-code
+        (
+            lambda parameter: 0.5
+            * (parameter ** 2)
+            * np.array(acceleration),  # pylint: disable=duplicate-code
+            lambda parameter: parameter
+            * np.array(acceleration),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                acceleration
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -179,39 +126,21 @@ def test_constant_not_origin_curve_tangent_vector() -> None:
     """
     position = [1.61, -2.71, 3.14]  # pylint: disable=duplicate-code
 
-    def constant_curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Constant curve not at the origin."""
-        del parameter
-        return np.array(position)
-
-    def constant_curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """First derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Second derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Third derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        constant_curve_radius,  # pylint: disable=duplicate-code
-        constant_curve_first_derivative,  # pylint: disable=duplicate-code
-        constant_curve_second_derivative,  # pylint: disable=duplicate-code
-        constant_curve_third_derivative,  # pylint: disable=duplicate-code
+        (
+            lambda parameter: np.array(
+                [position]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -231,38 +160,20 @@ def test_linear_off_axis_curve_tangent_vector() -> None:
     """
     velocity = [1.61, -2.71, 3.14]  # pylint: disable=duplicate-code
 
-    def linear_curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Linear curve."""
-        return parameter * np.array(velocity)
-
-    def linear_curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Derivative of a linear curve."""
-        del parameter
-        return np.array(velocity)
-
-    def linear_curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Second derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def linear_curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Third derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        linear_curve_radius,  # pylint: disable=duplicate-code
-        linear_curve_first_derivative,  # pylint: disable=duplicate-code
-        linear_curve_second_derivative,  # pylint: disable=duplicate-code
-        linear_curve_third_derivative,  # pylint: disable=duplicate-code
+        (
+            lambda parameter: parameter
+            * np.array(velocity),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                velocity
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -283,37 +194,20 @@ def test_quadratic_off_axis_curve_tangent_vector() -> None:
     """
     acceleration = [1.61, -2.71, 3.14]  # pylint: disable=duplicate-code
 
-    def quadratic_curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Linear curve."""
-        return 0.5 * (parameter ** 2) * np.array(acceleration)
-
-    def quadratic_curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Derivative of a quadratic curve."""
-        return parameter * np.array(acceleration)
-
-    def quadratic_curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Second derivative of a quadratic curve."""
-        del parameter
-        return np.array(acceleration)
-
-    def quadratic_curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Third derivative of a quadratic curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        quadratic_curve_radius,  # pylint: disable=duplicate-code
-        quadratic_curve_first_derivative,  # pylint: disable=duplicate-code
-        quadratic_curve_second_derivative,  # pylint: disable=duplicate-code
-        quadratic_curve_third_derivative,  # pylint: disable=duplicate-code
+        (
+            lambda parameter: 0.5
+            * (parameter ** 2)
+            * np.array(acceleration),  # pylint: disable=duplicate-code
+            lambda parameter: parameter
+            * np.array(acceleration),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                acceleration
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -333,40 +227,27 @@ def test_quadratic_off_axis_curve_tangent_vector() -> None:
 
 def test_non_linear_curve_tangent_vector() -> None:
     """Test that a non-linear curve gives the correct tangent vector."""
-
-    def curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Helix radius."""
-        return np.array([np.cos(parameter), np.sin(parameter), parameter])
-
-    def curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Helix first derivative."""
-        return np.array([-np.sin(parameter), np.cos(parameter), 1.0])
-
-    def curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Helix second derivative."""
-        return np.array([-np.cos(parameter), -np.sin(parameter), 0.0])
-
-    def curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Helix third derivative."""
-        return np.array([np.sin(parameter), -np.cos(parameter), 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        curve_radius,  # pylint: disable=duplicate-code
-        curve_first_derivative,  # pylint: disable=duplicate-code
-        curve_second_derivative,  # pylint: disable=duplicate-code
-        curve_third_derivative,
+        (
+            lambda parameter: np.array(
+                [np.cos(parameter), np.sin(parameter), parameter]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [-np.sin(parameter), np.cos(parameter), 1.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [-np.cos(parameter), -np.sin(parameter), 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [np.sin(parameter), -np.cos(parameter), 0.0]
+            ),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
-        tangent_vector = np.sqrt(0.5) * curve_first_derivative(parameter)
+        tangent_vector = np.sqrt(0.5) * np.array(
+            [-np.sin(parameter), np.cos(parameter), 1.0]
+        )
         np.testing.assert_allclose(
             curve.tangent_vector_at(parameter),
             tangent_vector,
@@ -386,39 +267,21 @@ def test_constant_curve_normal_vector() -> None:
     """
     position = [0.0, 0.0, 0.0]  # pylint: disable=duplicate-code
 
-    def constant_curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Constant curve at the origin."""
-        del parameter
-        return np.array(position)
-
-    def constant_curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Second derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Third derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        constant_curve_radius,  # pylint: disable=duplicate-code
-        constant_curve_first_derivative,  # pylint: disable=duplicate-code
-        constant_curve_second_derivative,  # pylint: disable=duplicate-code
-        constant_curve_third_derivative,  # pylint: disable=duplicate-code
+        (
+            lambda parameter: np.array(
+                [position]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -437,38 +300,20 @@ def test_linear_single_axis_curve_normal_vector() -> None:
     """
     velocity = [1.0, 0.0, 0.0]  # pylint: disable=duplicate-code
 
-    def linear_curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Linear curve."""
-        return parameter * np.array(velocity)
-
-    def linear_curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Derivative of a linear curve."""
-        del parameter
-        return np.array(velocity)
-
-    def linear_curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Second derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def linear_curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Third derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        linear_curve_radius,  # pylint: disable=duplicate-code
-        linear_curve_first_derivative,  # pylint: disable=duplicate-code
-        linear_curve_second_derivative,  # pylint: disable=duplicate-code
-        linear_curve_third_derivative,  # pylint: disable=duplicate-code
+        (
+            lambda parameter: parameter
+            * np.array(velocity),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                velocity
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -503,37 +348,20 @@ def test_quadratic_single_axis_curve_normal_vector() -> None:
     """
     acceleration = [1.0, 0.0, 0.0]  # pylint: disable=duplicate-code
 
-    def quadratic_curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Linear curve."""
-        return 0.5 * (parameter ** 2) * np.array(acceleration)
-
-    def quadratic_curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Derivative of a quadratic curve."""
-        return parameter * np.array(acceleration)
-
-    def quadratic_curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Second derivative of a quadratic curve."""
-        del parameter
-        return np.array(acceleration)
-
-    def quadratic_curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Third derivative of a quadratic curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        quadratic_curve_radius,  # pylint: disable=duplicate-code
-        quadratic_curve_first_derivative,  # pylint: disable=duplicate-code
-        quadratic_curve_second_derivative,  # pylint: disable=duplicate-code
-        quadratic_curve_third_derivative,  # pylint: disable=duplicate-code
+        (
+            lambda parameter: 0.5
+            * (parameter ** 2)
+            * np.array(acceleration),  # pylint: disable=duplicate-code
+            lambda parameter: parameter
+            * np.array(acceleration),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                acceleration
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -561,39 +389,21 @@ def test_constant_not_origin_curve_normal_vector() -> None:
     """
     position = [1.61, -2.71, 3.14]  # pylint: disable=duplicate-code
 
-    def constant_curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Constant curve not at the origin."""
-        del parameter
-        return np.array(position)
-
-    def constant_curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """First derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Second derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Third derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        constant_curve_radius,  # pylint: disable=duplicate-code
-        constant_curve_first_derivative,  # pylint: disable=duplicate-code
-        constant_curve_second_derivative,  # pylint: disable=duplicate-code
-        constant_curve_third_derivative,  # pylint: disable=duplicate-code
+        (
+            lambda parameter: np.array(
+                [position]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -613,38 +423,20 @@ def test_linear_off_axis_curve_normal_vector() -> None:
     """
     velocity = [1.61, -2.71, 3.14]  # pylint: disable=duplicate-code
 
-    def linear_curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Linear curve."""
-        return parameter * np.array(velocity)
-
-    def linear_curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Derivative of a linear curve."""
-        del parameter
-        return np.array(velocity)
-
-    def linear_curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Second derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def linear_curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Third derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        linear_curve_radius,  # pylint: disable=duplicate-code
-        linear_curve_first_derivative,  # pylint: disable=duplicate-code
-        linear_curve_second_derivative,  # pylint: disable=duplicate-code
-        linear_curve_third_derivative,  # pylint: disable=duplicate-code
+        (
+            lambda parameter: parameter
+            * np.array(velocity),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                velocity
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -672,37 +464,20 @@ def test_quadratic_off_axis_curve_normal_vector() -> None:
     """
     acceleration = [1.61, -2.71, 3.14]  # pylint: disable=duplicate-code
 
-    def quadratic_curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Linear curve."""
-        return 0.5 * (parameter ** 2) * np.array(acceleration)
-
-    def quadratic_curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Derivative of a quadratic curve."""
-        return parameter * np.array(acceleration)
-
-    def quadratic_curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Second derivative of a quadratic curve."""
-        del parameter
-        return np.array(acceleration)
-
-    def quadratic_curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Third derivative of a quadratic curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        quadratic_curve_radius,  # pylint: disable=duplicate-code
-        quadratic_curve_first_derivative,  # pylint: disable=duplicate-code
-        quadratic_curve_second_derivative,  # pylint: disable=duplicate-code
-        quadratic_curve_third_derivative,  # pylint: disable=duplicate-code
+        (
+            lambda parameter: 0.5
+            * (parameter ** 2)
+            * np.array(acceleration),  # pylint: disable=duplicate-code
+            lambda parameter: parameter
+            * np.array(acceleration),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                acceleration
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -725,36 +500,21 @@ def test_quadratic_off_axis_curve_normal_vector() -> None:
 
 def test_non_linear_curve_normal_vector() -> None:
     """Test that a non-linear curve gives the correct normal vector."""
-
-    def curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Helix radius."""
-        return np.array([np.cos(parameter), np.sin(parameter), parameter])
-
-    def curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Helix first derivative."""
-        return np.array([-np.sin(parameter), np.cos(parameter), 1.0])
-
-    def curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Helix second derivative."""
-        return np.array([-np.cos(parameter), -np.sin(parameter), 0.0])
-
-    def curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Helix third derivative."""
-        return np.array([np.sin(parameter), -np.cos(parameter), 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        curve_radius,  # pylint: disable=duplicate-code
-        curve_first_derivative,  # pylint: disable=duplicate-code
-        curve_second_derivative,  # pylint: disable=duplicate-code
-        curve_third_derivative,
+        (
+            lambda parameter: np.array(
+                [np.cos(parameter), np.sin(parameter), parameter]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [-np.sin(parameter), np.cos(parameter), 1.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [-np.cos(parameter), -np.sin(parameter), 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [np.sin(parameter), -np.cos(parameter), 0.0]
+            ),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -778,39 +538,21 @@ def test_constant_curve_binormal_vector() -> None:
     """
     position = [0.0, 0.0, 0.0]  # pylint: disable=duplicate-code
 
-    def constant_curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Constant curve at the origin."""
-        del parameter
-        return np.array(position)
-
-    def constant_curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Second derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Third derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        constant_curve_radius,  # pylint: disable=duplicate-code
-        constant_curve_first_derivative,  # pylint: disable=duplicate-code
-        constant_curve_second_derivative,  # pylint: disable=duplicate-code
-        constant_curve_third_derivative,  # pylint: disable=duplicate-code
+        (
+            lambda parameter: np.array(
+                [position]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -829,38 +571,20 @@ def test_linear_single_axis_curve_binormal_vector() -> None:
     """
     velocity = [1.0, 0.0, 0.0]  # pylint: disable=duplicate-code
 
-    def linear_curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Linear curve."""
-        return parameter * np.array(velocity)
-
-    def linear_curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Derivative of a linear curve."""
-        del parameter
-        return np.array(velocity)
-
-    def linear_curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Second derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def linear_curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Third derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        linear_curve_radius,  # pylint: disable=duplicate-code
-        linear_curve_first_derivative,  # pylint: disable=duplicate-code
-        linear_curve_second_derivative,  # pylint: disable=duplicate-code
-        linear_curve_third_derivative,  # pylint: disable=duplicate-code
+        (
+            lambda parameter: parameter
+            * np.array(velocity),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                velocity
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -894,37 +618,20 @@ def test_quadratic_single_axis_curve_binormal_vector() -> None:
     """
     acceleration = [1.0, 0.0, 0.0]  # pylint: disable=duplicate-code
 
-    def quadratic_curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Linear curve."""
-        return 0.5 * (parameter ** 2) * np.array(acceleration)
-
-    def quadratic_curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Derivative of a quadratic curve."""
-        return parameter * np.array(acceleration)
-
-    def quadratic_curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Second derivative of a quadratic curve."""
-        del parameter
-        return np.array(acceleration)
-
-    def quadratic_curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Third derivative of a quadratic curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        quadratic_curve_radius,  # pylint: disable=duplicate-code
-        quadratic_curve_first_derivative,  # pylint: disable=duplicate-code
-        quadratic_curve_second_derivative,  # pylint: disable=duplicate-code
-        quadratic_curve_third_derivative,  # pylint: disable=duplicate-code
+        (
+            lambda parameter: 0.5
+            * (parameter ** 2)
+            * np.array(acceleration),  # pylint: disable=duplicate-code
+            lambda parameter: parameter
+            * np.array(acceleration),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                acceleration
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -959,39 +666,21 @@ def test_constant_not_origin_curve_binormal_vector() -> None:
     """
     position = [1.61, -2.71, 3.14]  # pylint: disable=duplicate-code
 
-    def constant_curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Constant curve not at the origin."""
-        del parameter
-        return np.array(position)
-
-    def constant_curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """First derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Second derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Third derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        constant_curve_radius,  # pylint: disable=duplicate-code
-        constant_curve_first_derivative,  # pylint: disable=duplicate-code
-        constant_curve_second_derivative,  # pylint: disable=duplicate-code
-        constant_curve_third_derivative,  # pylint: disable=duplicate-code
+        (
+            lambda parameter: np.array(
+                [position]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -1011,38 +700,20 @@ def test_linear_off_axis_curve_binormal_vector() -> None:
     """
     velocity = [1.61, -2.71, 3.14]  # pylint: disable=duplicate-code
 
-    def linear_curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Linear curve."""
-        return parameter * np.array(velocity)
-
-    def linear_curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Derivative of a linear curve."""
-        del parameter
-        return np.array(velocity)
-
-    def linear_curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Second derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def linear_curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Third derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        linear_curve_radius,  # pylint: disable=duplicate-code
-        linear_curve_first_derivative,  # pylint: disable=duplicate-code
-        linear_curve_second_derivative,  # pylint: disable=duplicate-code
-        linear_curve_third_derivative,  # pylint: disable=duplicate-code
+        (
+            lambda parameter: parameter
+            * np.array(velocity),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                velocity
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -1076,37 +747,20 @@ def test_quadratic_off_axis_curve_binormal_vector() -> None:
     """
     acceleration = [1.61, -2.71, 3.14]  # pylint: disable=duplicate-code
 
-    def quadratic_curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Linear curve."""
-        return 0.5 * (parameter ** 2) * np.array(acceleration)
-
-    def quadratic_curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Derivative of a quadratic curve."""
-        return parameter * np.array(acceleration)
-
-    def quadratic_curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Second derivative of a quadratic curve."""
-        del parameter
-        return np.array(acceleration)
-
-    def quadratic_curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Third derivative of a quadratic curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        quadratic_curve_radius,  # pylint: disable=duplicate-code
-        quadratic_curve_first_derivative,  # pylint: disable=duplicate-code
-        quadratic_curve_second_derivative,  # pylint: disable=duplicate-code
-        quadratic_curve_third_derivative,  # pylint: disable=duplicate-code
+        (
+            lambda parameter: 0.5
+            * (parameter ** 2)
+            * np.array(acceleration),  # pylint: disable=duplicate-code
+            lambda parameter: parameter
+            * np.array(acceleration),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                acceleration
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -1135,36 +789,21 @@ def test_quadratic_off_axis_curve_binormal_vector() -> None:
 
 def test_non_linear_curve_binormal_vector() -> None:
     """Test that a non-linear curve gives the correct binormal vector."""
-
-    def curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Helix radius."""
-        return np.array([np.cos(parameter), np.sin(parameter), parameter])
-
-    def curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Helix first derivative."""
-        return np.array([-np.sin(parameter), np.cos(parameter), 1.0])
-
-    def curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Helix second derivative."""
-        return np.array([-np.cos(parameter), -np.sin(parameter), 0.0])
-
-    def curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Helix third derivative."""
-        return np.array([np.sin(parameter), -np.cos(parameter), 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        curve_radius,  # pylint: disable=duplicate-code
-        curve_first_derivative,  # pylint: disable=duplicate-code
-        curve_second_derivative,  # pylint: disable=duplicate-code
-        curve_third_derivative,
+        (
+            lambda parameter: np.array(
+                [np.cos(parameter), np.sin(parameter), parameter]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [-np.sin(parameter), np.cos(parameter), 1.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [-np.cos(parameter), -np.sin(parameter), 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [np.sin(parameter), -np.cos(parameter), 0.0]
+            ),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -1190,39 +829,21 @@ def test_constant_curve_curvature() -> None:
     """
     position = [0.0, 0.0, 0.0]  # pylint: disable=duplicate-code
 
-    def constant_curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Constant curve at the origin."""
-        del parameter
-        return np.array(position)
-
-    def constant_curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Second derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Third derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        constant_curve_radius,  # pylint: disable=duplicate-code
-        constant_curve_first_derivative,  # pylint: disable=duplicate-code
-        constant_curve_second_derivative,  # pylint: disable=duplicate-code
-        constant_curve_third_derivative,  # pylint: disable=duplicate-code
+        (
+            lambda parameter: np.array(
+                [position]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -1239,38 +860,20 @@ def test_linear_single_axis_curve_curvature() -> None:
     """
     velocity = [1.0, 0.0, 0.0]  # pylint: disable=duplicate-code
 
-    def linear_curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Linear curve."""
-        return parameter * np.array(velocity)
-
-    def linear_curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Derivative of a linear curve."""
-        del parameter
-        return np.array(velocity)
-
-    def linear_curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Second derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def linear_curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Third derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        linear_curve_radius,  # pylint: disable=duplicate-code
-        linear_curve_first_derivative,  # pylint: disable=duplicate-code
-        linear_curve_second_derivative,  # pylint: disable=duplicate-code
-        linear_curve_third_derivative,  # pylint: disable=duplicate-code
+        (
+            lambda parameter: parameter
+            * np.array(velocity),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                velocity
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -1287,37 +890,20 @@ def test_quadratic_single_axis_curve_curvature() -> None:
     """
     acceleration = [1.0, 0.0, 0.0]  # pylint: disable=duplicate-code
 
-    def quadratic_curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Linear curve."""
-        return 0.5 * (parameter ** 2) * np.array(acceleration)
-
-    def quadratic_curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Derivative of a quadratic curve."""
-        return parameter * np.array(acceleration)
-
-    def quadratic_curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Second derivative of a quadratic curve."""
-        del parameter
-        return np.array(acceleration)
-
-    def quadratic_curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Third derivative of a quadratic curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        quadratic_curve_radius,  # pylint: disable=duplicate-code
-        quadratic_curve_first_derivative,  # pylint: disable=duplicate-code
-        quadratic_curve_second_derivative,  # pylint: disable=duplicate-code
-        quadratic_curve_third_derivative,  # pylint: disable=duplicate-code
+        (
+            lambda parameter: 0.5
+            * (parameter ** 2)
+            * np.array(acceleration),  # pylint: disable=duplicate-code
+            lambda parameter: parameter
+            * np.array(acceleration),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                acceleration
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -1334,39 +920,21 @@ def test_constant_not_origin_curve_curvature() -> None:
     """
     position = [1.61, -2.71, 3.14]  # pylint: disable=duplicate-code
 
-    def constant_curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Constant curve not at the origin."""
-        del parameter
-        return np.array(position)
-
-    def constant_curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """First derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Second derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Third derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        constant_curve_radius,  # pylint: disable=duplicate-code
-        constant_curve_first_derivative,  # pylint: disable=duplicate-code
-        constant_curve_second_derivative,  # pylint: disable=duplicate-code
-        constant_curve_third_derivative,  # pylint: disable=duplicate-code
+        (
+            lambda parameter: np.array(
+                [position]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -1383,38 +951,20 @@ def test_linear_off_axis_curve_curvature() -> None:
     """
     velocity = [1.61, -2.71, 3.14]  # pylint: disable=duplicate-code
 
-    def linear_curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Linear curve."""
-        return parameter * np.array(velocity)
-
-    def linear_curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Derivative of a linear curve."""
-        del parameter
-        return np.array(velocity)
-
-    def linear_curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Second derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def linear_curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Third derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        linear_curve_radius,  # pylint: disable=duplicate-code
-        linear_curve_first_derivative,  # pylint: disable=duplicate-code
-        linear_curve_second_derivative,  # pylint: disable=duplicate-code
-        linear_curve_third_derivative,  # pylint: disable=duplicate-code
+        (
+            lambda parameter: parameter
+            * np.array(velocity),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                velocity
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -1431,37 +981,20 @@ def test_quadratic_off_axis_curve_curvature() -> None:
     """
     acceleration = [1.61, -2.71, 3.14]  # pylint: disable=duplicate-code
 
-    def quadratic_curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Linear curve."""
-        return 0.5 * (parameter ** 2) * np.array(acceleration)
-
-    def quadratic_curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Derivative of a quadratic curve."""
-        return parameter * np.array(acceleration)
-
-    def quadratic_curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Second derivative of a quadratic curve."""
-        del parameter
-        return np.array(acceleration)
-
-    def quadratic_curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Third derivative of a quadratic curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        quadratic_curve_radius,  # pylint: disable=duplicate-code
-        quadratic_curve_first_derivative,  # pylint: disable=duplicate-code
-        quadratic_curve_second_derivative,  # pylint: disable=duplicate-code
-        quadratic_curve_third_derivative,  # pylint: disable=duplicate-code
+        (
+            lambda parameter: 0.5
+            * (parameter ** 2)
+            * np.array(acceleration),  # pylint: disable=duplicate-code
+            lambda parameter: parameter
+            * np.array(acceleration),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                acceleration
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -1473,36 +1006,21 @@ def test_quadratic_off_axis_curve_curvature() -> None:
 
 def test_non_linear_curve_curvature() -> None:
     """Test that a non-linear curve gives the correct binormal vector."""
-
-    def curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Helix radius."""
-        return np.array([np.cos(parameter), np.sin(parameter), parameter])
-
-    def curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Helix first derivative."""
-        return np.array([-np.sin(parameter), np.cos(parameter), 1.0])
-
-    def curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Helix second derivative."""
-        return np.array([-np.cos(parameter), -np.sin(parameter), 0.0])
-
-    def curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Helix third derivative."""
-        return np.array([np.sin(parameter), -np.cos(parameter), 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        curve_radius,  # pylint: disable=duplicate-code
-        curve_first_derivative,  # pylint: disable=duplicate-code
-        curve_second_derivative,  # pylint: disable=duplicate-code
-        curve_third_derivative,
+        (
+            lambda parameter: np.array(
+                [np.cos(parameter), np.sin(parameter), parameter]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [-np.sin(parameter), np.cos(parameter), 1.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [-np.cos(parameter), -np.sin(parameter), 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [np.sin(parameter), -np.cos(parameter), 0.0]
+            ),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -1522,39 +1040,21 @@ def test_constant_curve_torsion() -> None:
     """
     position = [0.0, 0.0, 0.0]  # pylint: disable=duplicate-code
 
-    def constant_curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Constant curve at the origin."""
-        del parameter
-        return np.array(position)
-
-    def constant_curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Second derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Third derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        constant_curve_radius,  # pylint: disable=duplicate-code
-        constant_curve_first_derivative,  # pylint: disable=duplicate-code
-        constant_curve_second_derivative,  # pylint: disable=duplicate-code
-        constant_curve_third_derivative,  # pylint: disable=duplicate-code
+        (
+            lambda parameter: np.array(
+                [position]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -1571,38 +1071,20 @@ def test_linear_single_axis_curve_torsion() -> None:
     """
     velocity = [1.0, 0.0, 0.0]  # pylint: disable=duplicate-code
 
-    def linear_curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Linear curve."""
-        return parameter * np.array(velocity)
-
-    def linear_curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Derivative of a linear curve."""
-        del parameter
-        return np.array(velocity)
-
-    def linear_curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Second derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def linear_curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Third derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        linear_curve_radius,  # pylint: disable=duplicate-code
-        linear_curve_first_derivative,  # pylint: disable=duplicate-code
-        linear_curve_second_derivative,  # pylint: disable=duplicate-code
-        linear_curve_third_derivative,  # pylint: disable=duplicate-code
+        (
+            lambda parameter: parameter
+            * np.array(velocity),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                velocity
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -1619,37 +1101,20 @@ def test_quadratic_single_axis_curve_torsion() -> None:
     """
     acceleration = [1.0, 0.0, 0.0]  # pylint: disable=duplicate-code
 
-    def quadratic_curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Linear curve."""
-        return 0.5 * (parameter ** 2) * np.array(acceleration)
-
-    def quadratic_curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Derivative of a quadratic curve."""
-        return parameter * np.array(acceleration)
-
-    def quadratic_curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Second derivative of a quadratic curve."""
-        del parameter
-        return np.array(acceleration)
-
-    def quadratic_curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Third derivative of a quadratic curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        quadratic_curve_radius,  # pylint: disable=duplicate-code
-        quadratic_curve_first_derivative,  # pylint: disable=duplicate-code
-        quadratic_curve_second_derivative,  # pylint: disable=duplicate-code
-        quadratic_curve_third_derivative,  # pylint: disable=duplicate-code
+        (
+            lambda parameter: 0.5
+            * (parameter ** 2)
+            * np.array(acceleration),  # pylint: disable=duplicate-code
+            lambda parameter: parameter
+            * np.array(acceleration),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                acceleration
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -1665,39 +1130,21 @@ def test_constant_not_origin_curve_torsion() -> None:
     """
     position = [1.61, -2.71, 3.14]  # pylint: disable=duplicate-code
 
-    def constant_curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Constant curve not at the origin."""
-        del parameter
-        return np.array(position)
-
-    def constant_curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """First derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Second derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def constant_curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Third derivative of a constant curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        constant_curve_radius,  # pylint: disable=duplicate-code
-        constant_curve_first_derivative,  # pylint: disable=duplicate-code
-        constant_curve_second_derivative,  # pylint: disable=duplicate-code
-        constant_curve_third_derivative,  # pylint: disable=duplicate-code
+        (
+            lambda parameter: np.array(
+                [position]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -1714,38 +1161,20 @@ def test_linear_off_axis_curve_torsion() -> None:
     """
     velocity = [1.61, -2.71, 3.14]  # pylint: disable=duplicate-code
 
-    def linear_curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Linear curve."""
-        return parameter * np.array(velocity)
-
-    def linear_curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Derivative of a linear curve."""
-        del parameter
-        return np.array(velocity)
-
-    def linear_curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Second derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
-    def linear_curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Third derivative of a linear curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        linear_curve_radius,  # pylint: disable=duplicate-code
-        linear_curve_first_derivative,  # pylint: disable=duplicate-code
-        linear_curve_second_derivative,  # pylint: disable=duplicate-code
-        linear_curve_third_derivative,  # pylint: disable=duplicate-code
+        (
+            lambda parameter: parameter
+            * np.array(velocity),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                velocity
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -1762,37 +1191,20 @@ def test_quadratic_off_axis_curve_torsion() -> None:
     """
     acceleration = [1.61, -2.71, 3.14]  # pylint: disable=duplicate-code
 
-    def quadratic_curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Linear curve."""
-        return 0.5 * (parameter ** 2) * np.array(acceleration)
-
-    def quadratic_curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Derivative of a quadratic curve."""
-        return parameter * np.array(acceleration)
-
-    def quadratic_curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Second derivative of a quadratic curve."""
-        del parameter
-        return np.array(acceleration)
-
-    def quadratic_curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Third derivative of a quadratic curve."""
-        del parameter
-        return np.array([0.0, 0.0, 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        quadratic_curve_radius,  # pylint: disable=duplicate-code
-        quadratic_curve_first_derivative,  # pylint: disable=duplicate-code
-        quadratic_curve_second_derivative,  # pylint: disable=duplicate-code
-        quadratic_curve_third_derivative,  # pylint: disable=duplicate-code
+        (
+            lambda parameter: 0.5
+            * (parameter ** 2)
+            * np.array(acceleration),  # pylint: disable=duplicate-code
+            lambda parameter: parameter
+            * np.array(acceleration),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                acceleration
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [0.0, 0.0, 0.0]
+            ),  # pylint: disable=duplicate-code
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -1804,36 +1216,21 @@ def test_quadratic_off_axis_curve_torsion() -> None:
 
 def test_non_linear_curve_torsion() -> None:
     """Test that a non-linear curve gives the correct torsion."""
-
-    def curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Helix radius."""
-        return np.array([np.cos(parameter), np.sin(parameter), parameter])
-
-    def curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Helix first derivative."""
-        return np.array([-np.sin(parameter), np.cos(parameter), 1.0])
-
-    def curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Helix second derivative."""
-        return np.array([-np.cos(parameter), -np.sin(parameter), 0.0])
-
-    def curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Helix third derivative."""
-        return np.array([np.sin(parameter), -np.cos(parameter), 0.0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        curve_radius,  # pylint: disable=duplicate-code
-        curve_first_derivative,  # pylint: disable=duplicate-code
-        curve_second_derivative,  # pylint: disable=duplicate-code
-        curve_third_derivative,
+        (
+            lambda parameter: np.array(
+                [np.cos(parameter), np.sin(parameter), parameter]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [-np.sin(parameter), np.cos(parameter), 1.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [-np.cos(parameter), -np.sin(parameter), 0.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [np.sin(parameter), -np.cos(parameter), 0.0]
+            ),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
@@ -1847,39 +1244,23 @@ def test_tschirnhausen_cubic() -> None:
     """Test that all the trihedral stuff works under a gauntlet of a
     cubic polynomial function.
     """
-
-    def curve_radius(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Tschirnhausen radius."""
-        return np.array(
-            [3 - parameter ** 2, parameter * (3 - parameter ** 2), -parameter]
-        )
-
-    def curve_first_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Tschirnhausen first derivative."""
-        return np.array([-2 * parameter, 3 - 3 * parameter ** 2, -1])
-
-    def curve_second_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Tschirnhausen second derivative."""
-        return np.array([-2, -6 * parameter, 0])
-
-    def curve_third_derivative(
-        parameter: float,
-    ) -> npt.ArrayLike:  # pylint: disable=duplicate-code
-        """Tschirnhausen third derivative."""
-        del parameter
-        return np.array([0, -6, 0])
-
     curve = AnalyticCurve(  # pylint: disable=duplicate-code
-        curve_radius,  # pylint: disable=duplicate-code
-        curve_first_derivative,  # pylint: disable=duplicate-code
-        curve_second_derivative,  # pylint: disable=duplicate-code
-        curve_third_derivative,
+        (
+            lambda parameter: np.array(
+                [
+                    3 - parameter ** 2,
+                    parameter * (3 - parameter ** 2),
+                    -parameter,
+                ]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [-2 * parameter, 3 - 3 * parameter ** 2, -1.0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array(
+                [-2, -6 * parameter, 0]
+            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array([0, -6, 0]),
+        )
     )
 
     for parameter in np.linspace(-10.0, 10.0, num=41):
