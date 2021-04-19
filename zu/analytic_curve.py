@@ -88,7 +88,25 @@ class AnalyticCurve:
         should represent the "radius" of the curve (i.e. the coordinates
         that the curve passes through) and each function at index i
         beyond that represents the ith derivative.  You must include all
-        derivatives through the 3rd.
+        derivatives (which are described below) through the 3rd.
+
+        bounds gives the (upper_limit, lower_limit) for a finite curve.
+        These limits can also be +/- infinity if you want the curve to
+        extend to infinity only in one direction for example.  If bounds
+        does not have length of 2, then a ValueError will be raised, as
+        well as if the former bound is greater than the latter bound.
+
+        periodic flags that the curve is periodic (i.e. there exists
+        some number p > 0 where
+        `radius_at(parameter +/- p * k) == radius_at(parameter)`, where
+        k is an integer).  If periodic is true, then infinity may not be
+        one of the bounds, else a ValueError will be raised.
+
+        cyclic_closed should be set true if you want to verify that not
+        only is your curve periodic, but that it is continuous (C0)
+        across the bounds seems.  If it is not, then a ValueError will
+        be raised.  Also, if cyclic_closed is True and periodic is
+        False, then a ValueError will be raised.
 
         The radius  takes a real parameter and returns the displacement
         of each point on the curve from the origin.
@@ -120,7 +138,7 @@ class AnalyticCurve:
                 "derivative, second derivative, and third derivative."
             )
         if len(bounds) != 2:
-            raise ValueError("`bounds` must be a length-2 Iterable.")
+            raise ValueError("`bounds` must be a length-2 tuple.")
         if bounds[0] > bounds[1]:
             raise ValueError(
                 "bounds[1] must be greater than or equal to bounds[0]."
@@ -455,7 +473,9 @@ class AnalyticCurve:
 
     def _bounded(self, parameter: float) -> float:
         """This compares the parameter to the upper and lower bounds,
-        and if it's out of bounds, it raises the appropriate exception.
+        and if it's out of bounds, it either wraps it into bound if the
+        curve is periodic or raises the appropriate exception if its
+        not.
         """
         if self._periodic:
             modded_parameter = (
