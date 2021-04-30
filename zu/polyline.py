@@ -21,18 +21,20 @@ class Polyline(AnalyticCurve):
         """Creates the polyline with a parameterization of 1 unit per
         edge.
         """
-        if len(vertices) == 0:
+        if vertices.shape[0] == 0:
             raise ValueError(
                 "There must be at least one vertex on a polyline."
             )
-        self._vertices: npt.ArrayLike = vertices
-        self._number_of_vertices: int = len(self._vertices)
+        # self._vertices: npt.ArrayLike
+        # self._number_of_vertices: int
+
+        self._vertices = vertices
+        self._number_of_vertices = self._vertices.shape[0]
         self._set_vertex_parameters_to(
             np.array([float(i) for i in range(self._number_of_vertices)])
         )
 
         super().__init__(
-            self,
             (
                 self._radius_function(self._vertices),
                 self._first_derivative_function(self._vertices),
@@ -69,8 +71,8 @@ class Polyline(AnalyticCurve):
                 # parameter is at its max
                 position = self._vertices[-1]
                 logging.debug(
-                    "Interpolated at parameter %f, which is the end of the "
-                    "polyline, getting %s.",
+                    "Interpolated radius at parameter %f, which is the "
+                    "end of the polyline, getting %s.",
                     parameter,
                     position,
                 )
@@ -91,8 +93,8 @@ class Polyline(AnalyticCurve):
                 upper_vertex * local_parameter
             )
             logging.debug(
-                "Interpolated at parameter %s, which is between %s and %s, "
-                "and got %s.",
+                "Interpolated radius at parameter %s, which is between "
+                "%s and %s, and got %s.",
                 parameter,
                 lower_vertex,
                 upper_vertex,
@@ -100,6 +102,8 @@ class Polyline(AnalyticCurve):
             )
 
             return position
+
+        return radius
 
     def _first_derivative_function(
         self, vertices: npt.ArrayLike
@@ -110,84 +114,43 @@ class Polyline(AnalyticCurve):
         if len(vertices) == 1:
             logging.debug(
                 "There is only one vertex, so for all parameters, the "
-                "position must be at this point %s.",
-                self._vertices[0],
+                "first derivative must be [0, 0, 0].",
             )
             return lambda parameter: np.array([0, 0, 0])
 
-    # def radius_at(self, parameter: float) -> npt.ArrayLike:
-    #     """Gives the position of the point at the parameter."""
-    #     if self._number_of_vertices < 1:
-    #         logging.debug(
-    #             "There are no vertices, the position defaults to NaN."
-    #         )
-    #         return np.nan
-    #     if self._number_of_vertices == 1:
-    #         logging.debug(
-    #             "There is only one vertex, so for all parameters, the "
-    #             "position must be at this point %s.",
-    #             self._vertices[0],
-    #         )
-    #         return self._vertices[0]
-    #     if parameter < 0.0:
-    #         logging.debug(
-    #             "Parameter %f is below the minimum parameter 0.0.  "
-    #             "Setting position to the first vertex %s.",
-    #             parameter,
-    #             self._vertices[0],
-    #         )
-    #         return self._vertices[0]
-    #     if parameter > self._number_of_edges:
-    #         logging.debug(
-    #             "Parameter %f is above the max parameter %d.  Setting "
-    #             "position to the last vertex %s.",
-    #             parameter,
-    #             self._number_of_edges,
-    #             self._vertices[-1],
-    #         )
-    #         return self._vertices[-1]
+        def first_derivative(parameter: float) -> npt.ArrayLike:
+            """Computes the first derivative of a general polyline."""
+            lower_vertex_index = np.where(
+                self._vertex_parameters <= parameter
+            )[0].max()
+            if np.isclose(
+                self._vertex_parameters[lower_vertex_index],
+                self._vertex_parameters[-1],
+            ):
+                # parameter is at its max
+                position = self._vertices[-1] - self._vertices[-2]
+                logging.debug(
+                    "Interpolated first derivative at parameter %f, "
+                    "which is the end of the polyline, getting %s.",
+                    parameter,
+                    position,
+                )
+                return position
+            upper_vertex_index = np.where(self._vertex_parameters > parameter)[
+                0
+            ].min()
+            lower_vertex = self._vertices[lower_vertex_index]
+            upper_vertex = self._vertices[upper_vertex_index]
 
-    #     lower_vertex_index = np.where(self._vertex_parameters <= parameter)[
-    #         0
-    #     ].max()
-    #     if np.isclose(
-    #         self._vertex_parameters[lower_vertex_index],
-    #         self._vertex_parameters[-1],
-    #     ):
-    #         # parameter is at its max
-    #         position = self._vertices[-1]
-    #         logging.debug(
-    #             "Interpolated at parameter %f, which is the end of the "
-    #             "polyline, getting %s.",
-    #             parameter,
-    #             position,
-    #         )
-    #     else:
-    #         upper_vertex_index = np.where(self._vertex_parameters > parameter)[
-    #             0
-    #         ].min()
-    #         lower_vertex = self._vertices[lower_vertex_index]
-    #         upper_vertex = self._vertices[upper_vertex_index]
-    #         local_parameter = (
-    #             parameter - self._vertex_parameters[lower_vertex_index]
-    #         ) / (
-    #             self._vertex_parameters[upper_vertex_index]
-    #             - self._vertex_parameters[lower_vertex_index]
-    #         )
+            position = upper_vertex - lower_vertex
+            logging.debug(
+                "Calculating the first derivative as the difference "
+                "between the position of the two adjacent vertices.",
+            )
 
-    #         position = lower_vertex * (1 - local_parameter) + (
-    #             upper_vertex * local_parameter
-    #         )
-    #         logging.debug(
-    #             "Interpolated at parameter %s, which is between %s and %s, "
-    #             "and got %s.",
-    #             parameter,
-    #             lower_vertex,
-    #             upper_vertex,
-    #             position,
-    #         )
+            return position
 
-    #     return position
+        return first_derivative
 
     def _set_vertex_parameters_to(self, parameters: npt.ArrayLike) -> None:
         """Sets the parameters that each vertex is at.  The input list
