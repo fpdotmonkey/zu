@@ -17,7 +17,7 @@ class Polyline(AnalyticCurve):
     straight-line paths between them.
     """
 
-    def __init__(self, vertices: npt.ArrayLike) -> None:
+    def __init__(self, vertices: np.ndarray) -> None:
         """Creates the polyline with a parameterization of 1 unit per
         edge.
         """
@@ -25,10 +25,8 @@ class Polyline(AnalyticCurve):
             raise ValueError(
                 "There must be at least one vertex on a polyline."
             )
-        # self._vertices: npt.ArrayLike
-        # self._number_of_vertices: int
 
-        self._vertices = vertices
+        self._vertices: np.ndarray = vertices
         self._number_of_vertices = self._vertices.shape[0]
         self._set_vertex_parameters_to(
             np.array([float(i) for i in range(self._number_of_vertices)])
@@ -45,13 +43,13 @@ class Polyline(AnalyticCurve):
         )
 
     def _radius_function(
-        self, vertices: npt.ArrayLike
+        self, vertices: np.ndarray
     ) -> Callable[[float], npt.ArrayLike]:
         """Computes a polyline that goes through each of the vertices
         and returns a function that gives the line's coordinates given a
         parameter.
         """
-        if len(vertices) == 1:
+        if vertices.shape[0] == 1:
             logging.debug(
                 "There is only one vertex, so for all parameters, the "
                 "position must be at this point %s.",
@@ -106,12 +104,12 @@ class Polyline(AnalyticCurve):
         return radius
 
     def _first_derivative_function(
-        self, vertices: npt.ArrayLike
+        self, vertices: np.ndarray
     ) -> Callable[[float], npt.ArrayLike]:
         """Computes a function that gives the rate of change of the
         curve with respect to the parameter and return it.
         """
-        if len(vertices) == 1:
+        if vertices.shape[0] == 1:
             logging.debug(
                 "There is only one vertex, so for all parameters, the "
                 "first derivative must be [0, 0, 0].",
@@ -152,7 +150,7 @@ class Polyline(AnalyticCurve):
 
         return first_derivative
 
-    def _set_vertex_parameters_to(self, parameters: npt.ArrayLike) -> None:
+    def _set_vertex_parameters_to(self, parameters: np.ndarray) -> None:
         """Sets the parameters that each vertex is at.  The input list
         of parameters must be the same length as the the number of
         vertices or else this will throw an AssertionError.
