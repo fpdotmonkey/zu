@@ -492,6 +492,13 @@ class AnalyticCurve:
             second_derivative,
         )
 
+        if np.isclose(np.linalg.norm(first_derivative), 0.0):
+            logging.debug(
+                "The first derivative equals [0, 0, 0], so the normal "
+                "vector is [0, 0, 0]."
+            )
+            return np.array([0.0, 0.0, 0.0])
+
         if np.isclose(
             np.linalg.norm(np.cross(first_derivative, second_derivative)), 0.0
         ):
@@ -500,13 +507,6 @@ class AnalyticCurve:
                 "normal vector must be [0, 0, 0]."
             )
             return [0.0, 0.0, 0.0]
-
-        if np.isclose(np.linalg.norm(first_derivative), 0.0):
-            logging.debug(
-                "The first derivative equals [0, 0, 0], so the normal "
-                "vector is [0, 0, 0]."
-            )
-            return np.array([0.0, 0.0, 0.0])
 
         normal_vector: npt.ArrayLike = (
             np.power(np.linalg.norm(first_derivative), 2) * second_derivative
@@ -525,7 +525,8 @@ class AnalyticCurve:
         r"""This calculates the binormal vector of the curve at
         parameter.
 
-        :param      parameter:  The parameter along the curve.        :type       parameter:  float
+        :param      parameter:  The parameter along the curve.
+        :type       parameter:  float
 
         :returns:   The binormal vector of the curve.
         :rtype:     numpy.typing.ArrayLike
@@ -625,16 +626,14 @@ class AnalyticCurve:
                 f"parameter {self._upper_bound}.",
                 self._upper_bound,
             )
-        if parameter < self._lower_bound:
-            logging.debug(
-                "Parameter %f is less than the maximum parameter "
-                "%f.  Raising BelowBounds.",
-                parameter,
-                self._lower_bound,
-            )
-            raise self.BelowBounds(
-                f"Parameter {parameter} is less than the lower bound "
-                f"parameter {self._lower_bound}.",
-                self._lower_bound,
-            )
-        return parameter
+        logging.debug(
+            "Parameter %f is less than the minimum parameter "
+            "%f.  Raising BelowBounds.",
+            parameter,
+            self._lower_bound,
+        )
+        raise self.BelowBounds(
+            f"Parameter {parameter} is less than the lower bound "
+            f"parameter {self._lower_bound}.",
+            self._lower_bound,
+        )

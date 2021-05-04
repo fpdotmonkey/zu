@@ -528,6 +528,28 @@ def test_non_linear_curve_normal_vector() -> None:
         )
 
 
+def test_zero_first_derivative_normal() -> None:
+    """Test that a non-linear curve gives the correct normal vector."""
+    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+        (
+            lambda parameter: np.array([1, 1, 1]),
+            lambda parameter: np.array([0, 0, 0]),
+            lambda parameter: np.array([1, 1, 1]),
+            lambda parameter: np.array([1, 1, 1]),
+        )
+    )
+
+    for parameter in np.linspace(-10.0, 10.0, num=41):
+        np.testing.assert_allclose(
+            curve.normal_vector_at(parameter),
+            np.array([0, 0, 0]),
+            err_msg=(
+                "Fails to say that a curve with [0, 0, 0] first"
+                "derivative has normal vector of [0, 0, 0]."
+            ),
+        )
+
+
 # binormal vector
 
 

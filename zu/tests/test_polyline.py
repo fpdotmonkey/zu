@@ -157,8 +157,6 @@ def test_multi_segment_non_axis_aligned_polyline_radius() -> None:
             initial_vertex = 2
             final_vertex = 3
             local_parameter = parameter - 2.0
-        else:
-            raise ValueError("Parameter outside of [0, 3]")
 
         position = vertices[initial_vertex] * (1 - local_parameter) + (
             vertices[final_vertex] * local_parameter
@@ -371,8 +369,6 @@ def test_multi_segment_non_axis_aligned_polyline_first_derivative() -> None:
         elif parameter <= 3.0:
             initial_vertex = 2
             final_vertex = 3
-        else:
-            raise ValueError("Parameter outside of [0, 3]")
 
         velocity = vertices[final_vertex] - vertices[initial_vertex]
         np.testing.assert_allclose(
