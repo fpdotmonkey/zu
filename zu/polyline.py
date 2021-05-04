@@ -1,5 +1,9 @@
 """
-A polyline class.
+Stuff for computing curves that are straight lines between points.
+
+Class Polyline:
+    A class the represents such a sequence of straight lines between
+    points.
 """
 
 from __future__ import annotations
