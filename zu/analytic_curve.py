@@ -31,6 +31,11 @@ class AnalyticCurve:
         def __init__(self, message: str, upper_bound: float):
             """Generate an exception that contains a message and the
             upper bound that has been exceeded.
+
+            :param      message:      A message signaling above-bounds.
+            :type       message:      str
+            :param      upper_bound:  The curve's upper bound parameter.
+            :type       upper_bound:  float
             """
             super().__init__(self)
             self._message = message
@@ -53,6 +58,11 @@ class AnalyticCurve:
             exceeded their limit with respect to low-end parameters
             using message, and tell them what that limit was with
             lower_bound.
+
+            :param      message:      A message signaling below-bounds.
+            :type       message:      str
+            :param      lower_bound:  The curve's lower bound parameter.
+            :type       lower_bound:  float
             """
             super().__init__(self)
             self._message = message
@@ -83,30 +93,67 @@ class AnalyticCurve:
         ensure whatever functions given are indeed the derivatives of
         the others.
 
-        coordinates is a tuple of functions heads.  Each function must
-        take a float and return a numpy array-like.  The zeroth function
-        should represent the "radius" of the curve (i.e. the coordinates
-        that the curve passes through) and each function at index i
-        beyond that represents the ith derivative.  You must include all
-        derivatives (which are described below) through the 3rd.
+        :param      coordinates:    A tuple of functions heads.  Each
+                                    function must take a float and
+                                    return a numpy array-like.  The
+                                    zeroth function should represent the
+                                    "radius" of the curve (i.e. the
+                                    coordinates that the curve passes
+                                    through) and each function at index
+                                    i beyond that represents the ith
+                                    derivative.  You must include all
+                                    derivatives (which are described
+                                    below) through the 3rd.
+        :type       coordinates:    Tuple[
+                                        Callable[[float], npt.ArrayLike],
+                                        Callable[[float], npt.ArrayLike],
+                                        Callable[[float], npt.ArrayLike],
+                                        Callable[[float], npt.ArrayLike],
+                                    ]
+        :param      bounds:         The (upper_limit, lower_limit) for a
+                                    finite curve.  These limits can also
+                                    be +/- infinity if you want the
+                                    curve to extend to infinity only in
+                                    one direction for example.  If
+                                    bounds does not have length of 2,
+                                    then a ValueError will be raised, as
+                                    well as if the former bound is
+                                    greater than the latter bound.
+        :type       bounds:         Tuple[float, float]
+        :param      periodic:       This flags that the curve is
+                                    periodic (i.e. there exists some
+                                    number p > 0 where
+                                    `radius_at(parameter +/- p * k)
+                                    == radius_at(parameter)`, where k is
+                                    an integer).  If periodic is true,
+                                    then infinity may not be one of the
+                                    bounds, else a ValueError will be
+                                    raised.
+        :type       periodic:       bool
+        :param      cyclic_closed:  This should be set true if you want
+                                    to verify that not only is your
+                                    curve periodic, but that it is
+                                    continuous (C0) across the bounds
+                                    seems.  If it is not, then a
+                                    ValueError will be raised.  Also, if
+                                    cyclic_closed is True and periodic
+                                    is False, then a ValueError will be
+                                    raised.
+        :type       cyclic_closed:  bool
 
-        bounds gives the (upper_limit, lower_limit) for a finite curve.
-        These limits can also be +/- infinity if you want the curve to
-        extend to infinity only in one direction for example.  If bounds
-        does not have length of 2, then a ValueError will be raised, as
-        well as if the former bound is greater than the latter bound.
+        :raises     ValueError: If there aren't enough coordinates to
+                                get the third derivative.
+        :raises     ValueError: If `bounds` doesnt have length of two.
+        :raises     ValueError: If the lower bound is greater than the
+                                upper.
+        :raises     ValueError: If the curve is periodic and one of the
+                                bounds is infinite.
+        :raises     ValueError: If `cyclic_closed` and not `periodic`.
+        :raises     ValueError: If the radius function evaluated at
+                                bounds[0] is not equal to the radius
+                                function evaluated at bounds[1].
 
-        periodic flags that the curve is periodic (i.e. there exists
-        some number p > 0 where
-        `radius_at(parameter +/- p * k) == radius_at(parameter)`, where
-        k is an integer).  If periodic is true, then infinity may not be
-        one of the bounds, else a ValueError will be raised.
-
-        cyclic_closed should be set true if you want to verify that not
-        only is your curve periodic, but that it is continuous (C0)
-        across the bounds seems.  If it is not, then a ValueError will
-        be raised.  Also, if cyclic_closed is True and periodic is
-        False, then a ValueError will be raised.
+        Here's more information on coordinates.
 
         The radius  takes a real parameter and returns the displacement
         of each point on the curve from the origin.
@@ -178,7 +225,14 @@ class AnalyticCurve:
         self._cyclic_closed: bool = cyclic_closed
 
     def radius_at(self, parameter: float) -> npt.ArrayLike:
-        """Computes the 3-vector coordinate at parameter and returns it."""
+        """Computes the 3-vector coordinate at parameter and returns it.
+
+        :param      parameter:  The parameter along the curve
+        :type       parameter:  float
+
+        :returns:   The radius vector
+        :rtype:     numpy.typing.ArrayLike
+        """
         radius = self._coordinates[0](self._bounded(parameter))
         logging.debug(
             "Calculated radius of %s from parameter %f.", radius, parameter
@@ -188,6 +242,12 @@ class AnalyticCurve:
     def first_derivative_at(self, parameter: float) -> npt.ArrayLike:
         """Computes the 3-vector first derivative at parameter and
         returns it.
+
+        :param      parameter:  The parameter along the curve.
+        :type       parameter:  float
+
+        :returns:   The first derivative vector.
+        :rtype:     numpy.typing.ArrayLike
         """
         first_derivative = self._coordinates[1](self._bounded(parameter))
         logging.debug(
@@ -200,6 +260,12 @@ class AnalyticCurve:
     def second_derivative_at(self, parameter: float) -> npt.ArrayLike:
         """Computes the 3-vector second derivative at parameter and
         returns it.
+
+        :param      parameter:  The parameter along the curve
+        :type       parameter:  float
+
+        :returns:   The second derivative vector.
+        :rtype:     numpy.typing.ArrayLike
         """
         second_derivative = self._coordinates[2](self._bounded(parameter))
         logging.debug(
@@ -212,6 +278,12 @@ class AnalyticCurve:
     def third_derivative_at(self, parameter: float) -> npt.ArrayLike:
         """Computes the 3-vector third derivative at parameter and
         returns it.
+
+        :param      parameter:  The parameter along the curve.
+        :type       parameter:  float
+
+        :returns:   The third derivative vector.
+        :rtype:     numpy.typing.ArrayLike
         """
         third_derivative = self._coordinates[3](self._bounded(parameter))
         logging.debug(
@@ -224,18 +296,25 @@ class AnalyticCurve:
     def curvature_at(self, parameter: float) -> float:
         r"""This calculates the curvature of the curve at parameter.
 
+        :param      parameter:  The parameter along the curve.
+        :type       parameter:  float
+
+        :returns:   The curvature
+        :rtype:     float
+
         The curvature is the inverse of the radius of the circle tangent
         to the curve at parameter.  In general, the curvature is
         calculated as such
 
-        .. math::
+        :f[
             :label: curvature
 
             k(t) = \frac{norm(r'(t) \times r''(t))}
                         {norm(r'(t))^3}
-            (Nikolai Golovanov, "Geometric Modeling", eq. (1.1.3))
+        :f]
+        (Nikolai Golovanov, "Geometric Modeling", eq. (1.1.3))
 
-        where k is curvature, t is parameter, r is the radius vector,
+        Where k is curvature, t is parameter, r is the radius vector,
         and \times is the vector (cross) product.
         """
         first_derivative: npt.ArrayLike = self.first_derivative_at(parameter)
@@ -271,19 +350,26 @@ class AnalyticCurve:
     def torsion_at(self, parameter: float) -> float:
         r"""This calculates the curvature of the curve at parameter.
 
+        :param      parameter:  The parameter along the curve.
+        :type       parameter:  float
+
+        :returns:   The torsion of the curve.
+        :rtype:     float
+
         The torsion of a curve is the rate of axial twist in that curve.
         It can be calculated in the general case with this equation.
 
-        .. math::
+        :f[
             :label: torsion
 
             \chi(t) = \frac{(r'(t) \times r''(t)) \cdot r'''(t)}
                            {norm(r'(t) \times r''(t))^2}
-            (Nikolai Golovanov, "Geometric Modeling", eq. (1.1.4))
+        :f]
+        (Nikolai Golovanov, "Geometric Modeling", eq. (1.1.4))
 
-        where \chi is torsion, t is parameter, r is the radius vector,
-        \times is the vector (cross) product, and \cdot is the scalar
-        (dot) product.
+        Where :f$ \chi :f$ is torsion, :f$ t :f$ is parameter, :f$ r :f$
+        is the radius vector, :f$ \times :f$ is the vector (cross)
+        product, and :f$ \cdot :f$ is the scalar (dot) product.
         """
         first_derivative: npt.ArrayLike = self.first_derivative_at(parameter)
         second_derivative: npt.ArrayLike = self.second_derivative_at(parameter)
@@ -320,18 +406,23 @@ class AnalyticCurve:
         r"""This calculates the tangent vector of the curve at
         parameter.
 
+        :param      parameter:  The parameter along the curve.
+        :type       parameter:  float
+
+        :returns:   The tangent vector of the curve.
+        :rtype:     numpy.typing.ArrayLike
+
         A curve's tangent vector is parallel with the first derivative
         and lies along intersection of the osculating plane and the
         rectifying plane.  It can be calculated as the following.
 
-        .. math::
-            :label: tangent
-
+        :f[
             T(t) = normalize(r'(t))
-            (Nikolai Golovanov, "Geometric Modeling", eq. (1.1.2))
+        :f]
+        (Nikolai Golovanov, "Geometric Modeling", eq. (1.1.2))
 
-        where T is the tangent vector, t is parameter, and r is the
-        radius vector.
+        Where :f$ T :f$ is the tangent vector, :f$ t :f$ is parameter,
+        and :f$ r :f$ is the radius vector.
         """
         first_derivative: npt.ArrayLike = self.first_derivative_at(parameter)
         logging.debug(
@@ -360,6 +451,12 @@ class AnalyticCurve:
         r"""This calculates the normal vector of the curve at
         parameter.
 
+        :param      parameter:  The parameter along the curve
+        :type       parameter:  float
+
+        :returns:   The normal vector of the curve.
+        :rtype:     numpy.typing.ArrayLike
+
         The normal vector of a curve, also called the principal normal
         of the curve, lies parallel to the second derivative of the
         curve in its natural parameterization.  It also is found at the
@@ -367,7 +464,7 @@ class AnalyticCurve:
         strictly perpendicular to the tangent vector.  Analytically, it
         can be computed as this.
 
-        .. math::
+        :f[
             :label: normal
 
             n(t) = (\frac{r''(t)}
@@ -375,11 +472,12 @@ class AnalyticCurve:
                     - r'(t) \frac{r'(t) \cdot r''(t)}
                                  {norm(r'(t))^4}
                    ) / k(t)
-            (Nikolai Golovanov, "Geometric Modeling", eq. (1.1.4))
+        :f]
+        (Nikolai Golovanov, "Geometric Modeling", eq. (1.1.4))
 
-        where n is the normal vector, t is parameter, r is the radius
-        vector, k is the curvature at t, and \cdot is the scalar (dot)
-        product.
+        Where :f$ n :f$ is the normal vector, :f$ t :f$ is parameter,
+        :f$ r :f$ is the radius vector, :f$ k :f$ is the curvature at
+        :f$ t :f$, and :f$ \cdot :f$ is the scalar (dot) product.
 
         In cases where the normal vector would be ill-defined, i.e. when
         the first and second derivatives of the curve are parallel (in
@@ -429,20 +527,34 @@ class AnalyticCurve:
         r"""This calculates the binormal vector of the curve at
         parameter.
 
+        :param      parameter:  The parameter along the curve
+        :type       parameter:  float
+
+        :returns:   The binormal vector of the curve
+        :rtype:     numpy.typing.ArrayLike
+
         The binormal vector of a curve is the vector along the
         intersection of the normal and rectifying planes and that also
         forms a right-handed triple with the tangent and normal vectors.
         Generally, it can be calculated with this equation.
 
-        .. math::
+        :f[
             :label: binormal
 
             b(t) = \frac{r'(t) \times r''(t)}
                         {k(t) norm(r'(t))}
-            (Nikolai Golovanov, "Geometric Modeling", eq. (1.1.4))
+        :f]
+        (Nikolai Golovanov, "Geometric Modeling", eq. (1.1.4))
 
-        where b is torsion, t is parameter, r is the radius vector, k is
-        the curvature at t, and \times is the vector (cross) product.
+        Where :f$ b :f$ is torsion, :f$ t :f$ is parameter, :f$ r :f$ is
+        the radius vector, :f$ k :f$ is the curvature at :f$ t :f$, and
+        :f$ \times :f$ is the vector (cross) product.
+
+        In cases where the binormal vector would be ill-defined, i.e.
+        when the first and second derivatives of the curve are parallel
+        (in other words, a straight line) or when the first derivative
+        is the zero vector, the normal vector will be made to be the
+        zero vector.
         """
         first_derivative: npt.ArrayLike = self.first_derivative_at(parameter)
         second_derivative: npt.ArrayLike = self.second_derivative_at(parameter)
@@ -476,6 +588,17 @@ class AnalyticCurve:
         and if it's out of bounds, it either wraps it into bound if the
         curve is periodic or raises the appropriate exception if its
         not.
+
+        :param      parameter:  The parameter along the curve.
+        :type       parameter:  float
+
+        :returns:   An in-bounds parameter.
+        :rtype:     float
+
+        :raises     AboveBounds: If a too-high parameter is given in a
+                                 non-periodic curve.
+        :raises     BelowBounds: If a too-low parameter is given in a
+                                 non-periodic curve
         """
         if self._periodic:
             modded_parameter = (
