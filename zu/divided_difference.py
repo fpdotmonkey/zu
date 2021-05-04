@@ -122,8 +122,7 @@ def divided_difference(
 def _divided_difference_denominator(
     knot_index: int, knots: np.ndarray
 ) -> float:
-    """
-    Computes the denominator of an analytically-calculated divided
+    """Computes the denominator of an analytically-calculated divided
     difference.
 
     :param      knot_index:  The index of the particular knot the

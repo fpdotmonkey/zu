@@ -20,6 +20,10 @@ class Polyline(AnalyticCurve):
     def __init__(self, vertices: np.ndarray) -> None:
         """Creates the polyline with a parameterization of 1 unit per
         edge.
+
+        :param      vertices:  The points through which the polyline
+                               will go
+        :type       vertices:  numpy.ndarray
         """
         if vertices.shape[0] == 0:
             raise ValueError(
@@ -48,6 +52,14 @@ class Polyline(AnalyticCurve):
         """Computes a polyline that goes through each of the vertices
         and returns a function that gives the line's coordinates given a
         parameter.
+
+        :param      vertices:  The points through which the polyline
+                               will go
+        :type       vertices:  numpy.ndarray
+
+        :returns:   A function that takes a parameter and returns a
+                    radius vector
+        :rtype:     Callable[[float], npt.ArrayLike]
         """
         if vertices.shape[0] == 1:
             logging.debug(
@@ -58,7 +70,16 @@ class Polyline(AnalyticCurve):
             return lambda parameter: self._vertices[0]
 
         def radius(parameter: float) -> npt.ArrayLike:
-            """Computes the radius of a general polyline."""
+            """
+            Computes the radius of a general polyline.
+
+            :param      parameter:  The parameter along the curve to
+                                    take the radius vector
+            :type       parameter:  float
+
+            :returns:   The radius vector
+            :rtype:     numpy.typing.ArrayLike
+            """
             lower_vertex_index = np.where(
                 self._vertex_parameters <= parameter
             )[0].max()
@@ -108,6 +129,13 @@ class Polyline(AnalyticCurve):
     ) -> Callable[[float], npt.ArrayLike]:
         """Computes a function that gives the rate of change of the
         curve with respect to the parameter and return it.
+
+        :param      vertices:  The points through which the polyline
+                               will go
+        :type       vertices:  numpy.ndarray
+
+        :returns:   A vector in the direction of the first derivative.
+        :rtype:     numpy.typing.ArrayLike
         """
         if vertices.shape[0] == 1:
             logging.debug(
@@ -117,7 +145,16 @@ class Polyline(AnalyticCurve):
             return lambda parameter: np.array([0, 0, 0])
 
         def first_derivative(parameter: float) -> npt.ArrayLike:
-            """Computes the first derivative of a general polyline."""
+            """
+            Computes the first derivative of a general polyline.
+
+            :param      parameter:  The parameter along the curve to
+                                    take the radius vector
+            :type       parameter:  float
+
+            :returns:   The first derivative vector
+            :rtype:     numpy.typing.ArrayLike
+            """
             lower_vertex_index = np.where(
                 self._vertex_parameters <= parameter
             )[0].max()
@@ -154,6 +191,13 @@ class Polyline(AnalyticCurve):
         """Sets the parameters that each vertex is at.  The input list
         of parameters must be the same length as the the number of
         vertices or else this will throw an AssertionError.
+
+        :param      parameters:     The parameters that each vertex is
+                                    located at.
+        :type       parameters:     numpy.ndarray
+
+        :raises     AssertionError: If the number of parameter is not
+                                    the same as the number of vertices.
         """
         assert len(parameters) == self._number_of_vertices, (
             "There are not enought parameter lengths for the number of "
