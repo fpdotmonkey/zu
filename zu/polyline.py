@@ -26,7 +26,7 @@ class Polyline(AnalyticCurve):
         edge.
 
         :param      vertices:  The points through which the polyline
-                               will go
+                               will go.
         :type       vertices:  numpy.ndarray
         """
         if vertices.shape[0] == 0:
@@ -58,11 +58,11 @@ class Polyline(AnalyticCurve):
         parameter.
 
         :param      vertices:  The points through which the polyline
-                               will go
+                               will go.
         :type       vertices:  numpy.ndarray
 
         :returns:   A function that takes a parameter and returns a
-                    radius vector
+                    radius vector.
         :rtype:     Callable[[float], npt.ArrayLike]
         """
         if vertices.shape[0] == 1:
@@ -78,10 +78,10 @@ class Polyline(AnalyticCurve):
             Computes the radius of a general polyline.
 
             :param      parameter:  The parameter along the curve to
-                                    take the radius vector
+                                    take the radius vector.
             :type       parameter:  float
 
-            :returns:   The radius vector
+            :returns:   The radius vector.
             :rtype:     numpy.typing.ArrayLike
             """
             lower_vertex_index = np.where(
@@ -135,7 +135,7 @@ class Polyline(AnalyticCurve):
         curve with respect to the parameter and return it.
 
         :param      vertices:  The points through which the polyline
-                               will go
+                               will go.
         :type       vertices:  numpy.ndarray
 
         :returns:   A vector in the direction of the first derivative.
@@ -153,10 +153,10 @@ class Polyline(AnalyticCurve):
             Computes the first derivative of a general polyline.
 
             :param      parameter:  The parameter along the curve to
-                                    take the radius vector
+                                    take the radius vector.
             :type       parameter:  float
 
-            :returns:   The first derivative vector
+            :returns:   The first derivative vector.
             :rtype:     numpy.typing.ArrayLike
             """
             lower_vertex_index = np.where(

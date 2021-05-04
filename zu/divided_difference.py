@@ -20,14 +20,14 @@ def divided_difference(
     function `function`.  It's useful for things like interpolation.
 
     :param      function:    The function over which you'd like to take
-                             the divided difference
+                             the divided difference.
     :type       function:    Callable[[float], float]
     :param      knots:       An array of knots with which to compute the
-                             divided difference
+                             divided difference.
     :type       knots:       np.ndarray
 
     :returns:   The value of the divided difference with the knots over
-                the function
+                the function.
     :rtype:     float
 
     :raises     ValueError:  If the knots array has length 0.

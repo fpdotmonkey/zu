@@ -227,10 +227,10 @@ class AnalyticCurve:
     def radius_at(self, parameter: float) -> npt.ArrayLike:
         """Computes the 3-vector coordinate at parameter and returns it.
 
-        :param      parameter:  The parameter along the curve
+        :param      parameter:  The parameter along the curve.
         :type       parameter:  float
 
-        :returns:   The radius vector
+        :returns:   The radius vector.
         :rtype:     numpy.typing.ArrayLike
         """
         radius = self._coordinates[0](self._bounded(parameter))
@@ -261,8 +261,7 @@ class AnalyticCurve:
         """Computes the 3-vector second derivative at parameter and
         returns it.
 
-        :param      parameter:  The parameter along the curve
-        :type       parameter:  float
+        :param      parameter:  The parameter along the curve.        :type       parameter:  float
 
         :returns:   The second derivative vector.
         :rtype:     numpy.typing.ArrayLike
@@ -299,7 +298,7 @@ class AnalyticCurve:
         :param      parameter:  The parameter along the curve.
         :type       parameter:  float
 
-        :returns:   The curvature
+        :returns:   The curvature.
         :rtype:     float
 
         The curvature is the inverse of the radius of the circle tangent
@@ -451,8 +450,7 @@ class AnalyticCurve:
         r"""This calculates the normal vector of the curve at
         parameter.
 
-        :param      parameter:  The parameter along the curve
-        :type       parameter:  float
+        :param      parameter:  The parameter along the curve.        :type       parameter:  float
 
         :returns:   The normal vector of the curve.
         :rtype:     numpy.typing.ArrayLike
@@ -527,10 +525,9 @@ class AnalyticCurve:
         r"""This calculates the binormal vector of the curve at
         parameter.
 
-        :param      parameter:  The parameter along the curve
-        :type       parameter:  float
+        :param      parameter:  The parameter along the curve.        :type       parameter:  float
 
-        :returns:   The binormal vector of the curve
+        :returns:   The binormal vector of the curve.
         :rtype:     numpy.typing.ArrayLike
 
         The binormal vector of a curve is the vector along the
