@@ -79,15 +79,6 @@ def _radius_function(
         return lambda parameter: control_points[0]
 
     def radius(parameter: float) -> npt.ArrayLike:
-        """Computes the radius of a general polyline.
-
-        :param      parameter:  The parameter along the curve to
-                                take the radius vector.
-        :type       parameter:  float
-
-        :returns:   The radius vector.
-        :rtype:     numpy.typing.ArrayLike
-        """
         index, local_parameter = np.divmod(parameter, 1)
         index = index.astype(int)
         if index == control_points.shape[0] - 1:
@@ -133,16 +124,6 @@ def _first_derivative_function(
         return lambda parameter: np.array([0, 0, 0])
 
     def first_derivative(parameter: float) -> npt.ArrayLike:
-        """
-        Computes the first derivative of a general polyline.
-
-        :param      parameter:  The parameter along the curve to
-                                take the first derivative vector.
-        :type       parameter:  float
-
-        :returns:   The first derivative vector.
-        :rtype:     numpy.typing.ArrayLike
-        """
         index = np.floor(parameter)
         index = index.astype(int)
         if index == control_points.shape[0] - 1:
