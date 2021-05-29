@@ -17,7 +17,7 @@ logging.getLogger().setLevel(logging.DEBUG)
 
 
 def test_no_points_given() -> None:
-    """Tests that if there are no vertices in the polyline, then a
+    """Tests that if there are no control points in the polyline, then a
     ValueError should be raised.
     """
     with pytest.raises(ValueError):
@@ -28,12 +28,12 @@ def test_single_point_polyline_radius() -> None:
     """Tests that along the entire line, a polyline defined by a single
     point should be equal to just that single point.
     """
-    vertices = np.array([(0.0, 0.0, 0.0)])
-    curve = Polyline(vertices)
+    control_points = np.array([(0.0, 0.0, 0.0)])
+    curve = Polyline(control_points)
     for parameter in np.linspace(0.0, 1.0, num=5):
-        assert (curve.radius_at(parameter) == vertices[0]).all(), (
-            f"Fails to say that a polyline defined by {vertices} is "
-            f"equal to {vertices[0]} at parameter {parameter}."
+        assert (curve.radius_at(parameter) == control_points[0]).all(), (
+            f"Fails to say that a polyline defined by {control_points} is "
+            f"equal to {control_points[0]} at parameter {parameter}."
         )
 
 
@@ -42,26 +42,26 @@ def test_single_point_non_zero_polyline_radius() -> None:
     point should be equal to just that single point where that point is
     not the origin.
     """
-    vertices = np.array([(1.0, -2.0, -4.0)])
-    curve = Polyline(vertices)
+    control_points = np.array([(1.0, -2.0, -4.0)])
+    curve = Polyline(control_points)
     for parameter in np.linspace(0.0, 1.0, num=5):
-        assert (curve.radius_at(parameter) == vertices[0]).all(), (
-            f"Fails to say that a polyline defined by {vertices} is "
-            f"equal to {vertices[0]} at parameter {parameter}."
+        assert (curve.radius_at(parameter) == control_points[0]).all(), (
+            f"Fails to say that a polyline defined by {control_points} is "
+            f"equal to {control_points[0]} at parameter {parameter}."
         )
 
 
 def test_single_axis_polyline_radius() -> None:
     """Tests that a polyline that only varies along a single axis works."""
-    vertices = np.array([(0.0, 0.0, 0.0), (1.0, 0.0, 0.0)])
-    curve = Polyline(vertices)
+    control_points = np.array([(0.0, 0.0, 0.0), (1.0, 0.0, 0.0)])
+    curve = Polyline(control_points)
     for parameter in np.linspace(0.0, 1.0, num=5):
         position = (parameter, 0.0, 0.0)
         np.testing.assert_allclose(
             curve.radius_at(parameter),
             position,
             err_msg=f"Fails to say that a polyline defined by "
-            f"{vertices} is equal to {position} at parameter "
+            f"{control_points} is equal to {position} at parameter "
             f"{parameter}.",
         )
 
@@ -69,15 +69,17 @@ def test_single_axis_polyline_radius() -> None:
 def test_two_axis_polyline_radius() -> None:
     """Tests that a polyline that varies in a coordinate plane works."""
     # a length=1.0 curve in 2D
-    vertices = np.array([(0.0, 0.0, 0.0), (2.0 ** -0.5, 2.0 ** -0.5, 0.0)])
-    curve = Polyline(vertices)
+    control_points = np.array(
+        [(0.0, 0.0, 0.0), (2.0 ** -0.5, 2.0 ** -0.5, 0.0)]
+    )
+    curve = Polyline(control_points)
     for parameter in np.linspace(0.0, 1.0, num=5):
         position = (parameter * (2.0 ** -0.5), parameter * (2.0 ** -0.5), 0.0)
         np.testing.assert_allclose(
             curve.radius_at(parameter),
             position,
             err_msg=f"Fails to say that a polyline defined by "
-            f"{vertices} is equal to {position} at parameter "
+            f"{control_points} is equal to {position} at parameter "
             f"{parameter}.",
         )
 
@@ -87,17 +89,17 @@ def test_three_axis_polyline_radius() -> None:
     system works.
     """
     # a length=1.0 curve in 3D
-    vertices = np.array(
+    control_points = np.array(
         [(0.0, 0.0, 0.0), (3.0 ** -0.5, 3.0 ** -0.5, 3.0 ** -0.5)]
     )
-    curve = Polyline(vertices)
+    curve = Polyline(control_points)
     for parameter in np.linspace(0.0, 1.0, num=5):
         position = tuple(parameter * (3.0 ** -0.5) for _ in range(3))
         np.testing.assert_allclose(
             curve.radius_at(parameter),
             position,
             err_msg=f"Fails to say that a polyline defined by "
-            f"{vertices} is equal to {position} at parameter "
+            f"{control_points} is equal to {position} at parameter "
             f"{parameter}.",
         )
 
@@ -106,7 +108,7 @@ def test_multi_segment_polyline_radius() -> None:
     """Tests that a polyline made from multiple segments works."""
     # a length=1.0 curve with segments along each axis.  Each segment is
     # length=1/3.
-    vertices = np.array(
+    control_points = np.array(
         [
             (0.0, 0.0, 0.0),
             (1.0 / 3.0, 0.0, 0.0),
@@ -114,7 +116,7 @@ def test_multi_segment_polyline_radius() -> None:
             (1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0),
         ]
     )
-    curve = Polyline(vertices)
+    curve = Polyline(control_points)
     for parameter in np.linspace(0.0, 3.0, num=10):
         position = (
             min(1.0 / 3.0, max(0.0, 1.0 / 3.0 * parameter)),
@@ -135,7 +137,7 @@ def test_multi_segment_non_axis_aligned_polyline_radius() -> None:
     """
     # a length=1.0 3-segment polyline that isn't axis aligned.  Each
     # segment is length=1/3.
-    vertices = np.array(
+    control_points = np.array(
         [
             (0.0, 0.0, 0.0),
             (-1 / 12 * (2 + 2 ** 0.5), 1 / 12 * (2 - 2 ** 0.5), 1 / 6),
@@ -143,7 +145,7 @@ def test_multi_segment_non_axis_aligned_polyline_radius() -> None:
             (-1.0 / 6.0, 1.0 / 2.0, 1.0 / (3.0 * (2 ** 0.5))),
         ]
     )
-    curve = Polyline(vertices)
+    curve = Polyline(control_points)
     for parameter in np.linspace(0.0, 3.0, num=13):
         if parameter < 1.0:
             initial_vertex = 0
@@ -158,8 +160,8 @@ def test_multi_segment_non_axis_aligned_polyline_radius() -> None:
             final_vertex = 3
             local_parameter = parameter - 2.0
 
-        position = vertices[initial_vertex] * (1 - local_parameter) + (
-            vertices[final_vertex] * local_parameter
+        position = control_points[initial_vertex] * (1 - local_parameter) + (
+            control_points[final_vertex] * local_parameter
         )
         np.testing.assert_allclose(
             curve.radius_at(parameter),
@@ -174,7 +176,7 @@ def test_non_unit_length_polyline_radius() -> None:
     the number of segments of the polyline.
     """
     # a multi-segment polyline with length=4.0
-    vertices = np.array(
+    control_points = np.array(
         [
             (0.0, 0.0, 0.0),
             (2.0, 0.0, 0.0),
@@ -182,7 +184,7 @@ def test_non_unit_length_polyline_radius() -> None:
             (2.0, 1.0, 1.0),
         ]
     )
-    curve = Polyline(vertices)
+    curve = Polyline(control_points)
     for parameter in np.linspace(0.0, 3.0, num=13):
         position = (
             min(2.0, max(0.0, 2.0 * parameter)),
@@ -202,7 +204,7 @@ def test_repeated_vertex_polyline_radius() -> None:
     position at that vertex for 1.0 parameter distance.
     """
     # a polyline with a repeated vertex and length=4.0
-    vertices = np.array(
+    control_points = np.array(
         [
             (0.0, 0.0, 0.0),
             (0.0, 0.0, 0.0),
@@ -211,7 +213,7 @@ def test_repeated_vertex_polyline_radius() -> None:
             (2.0, 1.0, 1.0),
         ]
     )
-    curve = Polyline(vertices)
+    curve = Polyline(control_points)
     for parameter in np.linspace(0.0, 4.0, num=17):
         position = (
             min(2.0, max(0.0, 2.0 * (parameter - 1.0))),
@@ -234,15 +236,17 @@ def test_single_point_polyline_first_derivative() -> None:
     polyline defined by a single point should be equal to just that
     single point.
     """
-    vertices = np.array([(0.0, 0.0, 0.0)])
-    curve = Polyline(vertices)
+    control_points = np.array([(0.0, 0.0, 0.0)])
+    curve = Polyline(control_points)
     for parameter in np.linspace(0.0, 1.0, num=5):
         np.testing.assert_allclose(
             curve.first_derivative_at(parameter),
             [0, 0, 0],
-            err_msg=f"Fails to say that a polyline defined by "
-            f"{vertices} has first derivative equal to {vertices[0]} at "
-            f"parameter {parameter}.",
+            err_msg=(
+                f"Fails to say that a polyline defined by "
+                f"{control_points} has first derivative equal to "
+                f"{control_points[0]} at parameter {parameter}."
+            ),
         )
 
 
@@ -250,14 +254,15 @@ def test_single_point_non_zero_polyline_first_derivative() -> None:
     """Tests that along the entire line, a polyline defined by a single
     point should should have first derivative equal to zero.
     """
-    vertices = np.array([(1.0, -2.0, -4.0)])
-    curve = Polyline(vertices)
+    control_points = np.array([(1.0, -2.0, -4.0)])
+    curve = Polyline(control_points)
     for parameter in np.linspace(0.0, 1.0, num=5):
         np.testing.assert_allclose(
             curve.first_derivative_at(parameter),
             [0, 0, 0],
             err_msg=f"Fails to say that a polyline defined by "
-            f"{vertices} is equal to [0, 0, 0] at parameter {parameter}.",
+            f"{control_points} is equal to [0, 0, 0] at parameter "
+            f"{parameter}.",
         )
 
 
@@ -265,15 +270,15 @@ def test_single_axis_polyline_first_derivative() -> None:
     """Tests that a polyline that only varies along a single axis has
     constant first derivative.
     """
-    vertices = np.array([(0.0, 0.0, 0.0), (1.0, 0.0, 0.0)])
-    curve = Polyline(vertices)
+    control_points = np.array([(0.0, 0.0, 0.0), (1.0, 0.0, 0.0)])
+    curve = Polyline(control_points)
     for parameter in np.linspace(0.0, 1.0, num=5):
         position = (parameter, 0.0, 0.0)
         np.testing.assert_allclose(
             curve.first_derivative_at(parameter),
             [1, 0, 0],
             err_msg=f"Fails to say that a polyline defined by "
-            f"{vertices} is equal to {position} at parameter "
+            f"{control_points} is equal to {position} at parameter "
             f"{parameter}.",
         )
 
@@ -283,14 +288,16 @@ def test_two_axis_polyline_first_derivative() -> None:
     constant first derivative.
     """
     # a length=1.0 curve in 2D
-    vertices = np.array([(0.0, 0.0, 0.0), (2.0 ** -0.5, 2.0 ** -0.5, 0.0)])
-    curve = Polyline(vertices)
+    control_points = np.array(
+        [(0.0, 0.0, 0.0), (2.0 ** -0.5, 2.0 ** -0.5, 0.0)]
+    )
+    curve = Polyline(control_points)
     for parameter in np.linspace(0.0, 1.0, num=5):
         np.testing.assert_allclose(
             curve.first_derivative_at(parameter),
             [2.0 ** -0.5, 2.0 ** -0.5, 0.0],
             err_msg=f"Fails to say that a polyline defined by "
-            f"{vertices} is equal to {[2.0 ** -0.5, 2.0 ** -0.5, 0.0]} "
+            f"{control_points} is equal to {[2.0 ** -0.5, 2.0 ** -0.5, 0.0]} "
             f"at parameter {parameter}.",
         )
 
@@ -300,16 +307,16 @@ def test_three_axis_polyline_first_derivative() -> None:
     constant first derivative.
     """
     # a length=1.0 curve in 3D
-    vertices = np.array(
+    control_points = np.array(
         [(0.0, 0.0, 0.0), (3.0 ** -0.5, 3.0 ** -0.5, 3.0 ** -0.5)]
     )
-    curve = Polyline(vertices)
+    curve = Polyline(control_points)
     for parameter in np.linspace(0.0, 1.0, num=5):
         np.testing.assert_allclose(
             curve.first_derivative_at(parameter),
             [3.0 ** -0.5, 3.0 ** -0.5, 3.0 ** -0.5],
             err_msg=f"Fails to say that a polyline defined by "
-            f"{vertices} is equal to "
+            f"{control_points} is equal to "
             "{[3.0 ** -0.5, 3.0 ** -0.5, 3.0 ** -0.5]} at parameter "
             f"{parameter}.",
         )
@@ -321,7 +328,7 @@ def test_multi_segment_polyline_first_derivative() -> None:
     """
     # a length=1.0 curve with segments along each axis.  Each segment is
     # length=1/3.
-    vertices = np.array(
+    control_points = np.array(
         [
             (0.0, 0.0, 0.0),
             (1.0 / 3.0, 0.0, 0.0),
@@ -329,7 +336,7 @@ def test_multi_segment_polyline_first_derivative() -> None:
             (1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0),
         ]
     )
-    curve = Polyline(vertices)
+    curve = Polyline(control_points)
     for parameter in np.linspace(0.0, 3.0, num=10):
         velocity = (
             1 / 3 if parameter < 1 else 0,
@@ -350,7 +357,7 @@ def test_multi_segment_non_axis_aligned_polyline_first_derivative() -> None:
     """
     # a length=1.0 3-segment polyline that isn't axis aligned.  Each
     # segment is length=1/3.
-    vertices = np.array(
+    control_points = np.array(
         [
             (0.0, 0.0, 0.0),
             (-1 / 12 * (2 + 2 ** 0.5), 1 / 12 * (2 - 2 ** 0.5), 1 / 6),
@@ -358,7 +365,7 @@ def test_multi_segment_non_axis_aligned_polyline_first_derivative() -> None:
             (-1.0 / 6.0, 1.0 / 2.0, 1.0 / (3.0 * (2 ** 0.5))),
         ]
     )
-    curve = Polyline(vertices)
+    curve = Polyline(control_points)
     for parameter in np.linspace(0.0, 3.0, num=13):
         if parameter < 1.0:
             initial_vertex = 0
@@ -370,7 +377,9 @@ def test_multi_segment_non_axis_aligned_polyline_first_derivative() -> None:
             initial_vertex = 2
             final_vertex = 3
 
-        velocity = vertices[final_vertex] - vertices[initial_vertex]
+        velocity = (
+            control_points[final_vertex] - control_points[initial_vertex]
+        )
         np.testing.assert_allclose(
             curve.first_derivative_at(parameter),
             velocity,
@@ -385,7 +394,7 @@ def test_non_unit_length_polyline_first_derivative() -> None:
     derivative.
     """
     # a multi-segment polyline with length=4.0
-    vertices = np.array(
+    control_points = np.array(
         [
             (0.0, 0.0, 0.0),
             (2.0, 0.0, 0.0),
@@ -393,7 +402,7 @@ def test_non_unit_length_polyline_first_derivative() -> None:
             (2.0, 1.0, 1.0),
         ]
     )
-    curve = Polyline(vertices)
+    curve = Polyline(control_points)
     for parameter in np.linspace(0.0, 3.0, num=13):
         velocity = (
             2 if parameter < 1 else 0,
@@ -413,7 +422,7 @@ def test_repeated_vertex_polyline_first_derivative() -> None:
     first derivative be zero at that vertex for 1.0 parameter distance.
     """
     # a polyline with a repeated vertex and length=4.0
-    vertices = np.array(
+    control_points = np.array(
         [
             (0.0, 0.0, 0.0),
             (0.0, 0.0, 0.0),
@@ -422,7 +431,7 @@ def test_repeated_vertex_polyline_first_derivative() -> None:
             (2.0, 1.0, 1.0),
         ]
     )
-    curve = Polyline(vertices)
+    curve = Polyline(control_points)
     for parameter in np.linspace(0.0, 4.0, num=17):
         velocity = (
             2 if 1 <= parameter < 2 else 0,
@@ -444,7 +453,7 @@ def test_second_derivative() -> None:
     """Tests that the second derivative of a polyline is always zero at
     all parameters, given the polyline has at least 1 vertex.
     """
-    vertices = np.array(
+    control_points = np.array(
         [
             (0.0, 0.0, 0.0),
             (0.0, 0.0, 0.0),
@@ -453,7 +462,7 @@ def test_second_derivative() -> None:
             (2.0, 1.0, 1.0),
         ]
     )
-    curve = Polyline(vertices)
+    curve = Polyline(control_points)
     for parameter in np.linspace(0.0, 4.0, num=17):
         np.testing.assert_allclose(
             curve.second_derivative_at(parameter),
@@ -467,7 +476,7 @@ def test_third_derivative() -> None:
     """Tests that the third derivative of a polyline is always zero at
     all parameters, given the polyline has at least 1 vertex.
     """
-    vertices = np.array(
+    control_points = np.array(
         [
             (0.0, 0.0, 0.0),
             (0.0, 0.0, 0.0),
@@ -476,7 +485,7 @@ def test_third_derivative() -> None:
             (2.0, 1.0, 1.0),
         ]
     )
-    curve = Polyline(vertices)
+    curve = Polyline(control_points)
     for parameter in np.linspace(0.0, 4.0, num=17):
         np.testing.assert_allclose(
             curve.third_derivative_at(parameter),

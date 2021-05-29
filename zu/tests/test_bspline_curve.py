@@ -15,7 +15,7 @@ logging.getLogger().setLevel(logging.DEBUG)
 
 
 def test_bspline_no_points_given() -> None:
-    """Tests that when there are no vertices in the spline, a
+    """Tests that when there are no control_points in the spline, a
     ValueError is raised.
     """
     with pytest.raises(ValueError):
@@ -26,16 +26,16 @@ def test_single_point_bspline_radius() -> None:
     """Tests that along the entire line, a b-spline defined by a single
     point is equal to just that single point.
     """
-    vertices = np.array([(0.0, 0.0, 0.0)])
+    control_points = np.array([(0.0, 0.0, 0.0)])
     knot_vector = np.array([0, 0, 1, 1])
-    curve = BSplineCurve(vertices, knot_vector)
+    curve = BSplineCurve(control_points, knot_vector)
     for parameter in np.linspace(0.0, 1.0, num=5):
         np.testing.assert_allclose(
             curve.radius_at(parameter),
-            vertices[0],
+            control_points[0],
             err_msg=(
-                f"Fails to say that a b-spline defined by {vertices} is "
-                f"equal to {vertices[0]} at parameter {parameter}."
+                f"Fails to say that a b-spline defined by {control_points} is "
+                f"equal to {control_points[0]} at parameter {parameter}."
             ),
         )
 
@@ -45,31 +45,31 @@ def test_single_point_not_origin_bspline_radius() -> None:
     point is equal to just that single point, where that point is not
     the origin.
     """
-    vertices = np.array([(1.0, -1.0, 3.0)])
+    control_points = np.array([(1.0, -1.0, 3.0)])
     knot_vector = np.array([0, 0, 1, 1])
-    curve = BSplineCurve(vertices, knot_vector)
+    curve = BSplineCurve(control_points, knot_vector)
     for parameter in np.linspace(0.0, 1.0, num=5):
         np.testing.assert_allclose(
             curve.radius_at(parameter),
-            vertices[0],
+            control_points[0],
             err_msg=(
-                f"Fails to say that a b-spline defined by {vertices} is "
-                f"equal to {vertices[0]} at parameter {parameter}."
+                f"Fails to say that a b-spline defined by {control_points} is "
+                f"equal to {control_points[0]} at parameter {parameter}."
             ),
         )
 
 
 def test_single_axis_bspline_radius() -> None:
     """Tests that a bspline that only varies along a single axis works."""
-    vertices = np.array([(0.0, 0.0, 0.0), (1.0, 0.0, 0.0)])
-    curve = BSplineCurve(vertices)
+    control_points = np.array([(0.0, 0.0, 0.0), (1.0, 0.0, 0.0)])
+    curve = BSplineCurve(control_points)
     for parameter in np.linspace(0.0, 1.0, num=5):
         position = (parameter, 0.0, 0.0)
         np.testing.assert_allclose(
             curve.radius_at(parameter),
             position,
             err_msg=f"Fails to say that a bspline defined by "
-            f"{vertices} is equal to {position} at parameter "
+            f"{control_points} is equal to {position} at parameter "
             f"{parameter}.",
         )
 
@@ -77,15 +77,17 @@ def test_single_axis_bspline_radius() -> None:
 def test_two_axis_bspline_radius() -> None:
     """Tests that a bspline that varies in a coordinate plane works."""
     # a length=1.0 curve in 2D
-    vertices = np.array([(0.0, 0.0, 0.0), (2.0 ** -0.5, 2.0 ** -0.5, 0.0)])
-    curve = BSplineCurve(vertices)
+    control_points = np.array(
+        [(0.0, 0.0, 0.0), (2.0 ** -0.5, 2.0 ** -0.5, 0.0)]
+    )
+    curve = BSplineCurve(control_points)
     for parameter in np.linspace(0.0, 1.0, num=5):
         position = (parameter * (2.0 ** -0.5), parameter * (2.0 ** -0.5), 0.0)
         np.testing.assert_allclose(
             curve.radius_at(parameter),
             position,
             err_msg=(
-                f"Fails to say that a bspline defined by {vertices} is "
+                f"Fails to say that a bspline defined by {control_points} is "
                 f"equal to {position} at parameter {parameter}."
             ),
         )
@@ -96,17 +98,17 @@ def test_three_axis_bspline_radius() -> None:
     system has the correct radius vector.
     """
     # a length=1.0 curve in 3D
-    vertices = np.array(
+    control_points = np.array(
         [(0.0, 0.0, 0.0), (3.0 ** -0.5, 3.0 ** -0.5, 3.0 ** -0.5)]
     )
-    curve = BSplineCurve(vertices)
+    curve = BSplineCurve(control_points)
     for parameter in np.linspace(0.0, 1.0, num=5):
         position = tuple(parameter * (3.0 ** -0.5) for _ in range(3))
         np.testing.assert_allclose(
             curve.radius_at(parameter),
             position,
             err_msg=(
-                f"Fails to say that a bspline defined by {vertices} is "
+                f"Fails to say that a bspline defined by {control_points} is "
                 f"equal to {position} at parameter {parameter}."
             ),
         )
@@ -117,7 +119,7 @@ def test_multi_displacement_bspline_radius() -> None:
     correct radius vector.
     """
     # a length=1.0 curve with displacements along each axis.
-    vertices = np.array(
+    control_points = np.array(
         [
             (0.0, 0.0, 0.0),
             (1.0 / 3.0, 0.0, 0.0),
@@ -125,7 +127,7 @@ def test_multi_displacement_bspline_radius() -> None:
             (1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0),
         ]
     )
-    curve = BSplineCurve(vertices)
+    curve = BSplineCurve(control_points)
     nominal_radii = np.array(
         # computed using Mathematica's BSplineFunction over
         # np.linspace(0.0, 3.0, num=10) (inputs scaled by 1/3)
@@ -159,7 +161,7 @@ def test_multi_segment_non_axis_aligned_bspline_radius() -> None:
     """
     # a length=1.0 3-segment b-spline that isn't axis aligned.  Each
     # segment is length=1/3.
-    vertices = np.array(
+    control_points = np.array(
         [
             (0.0, 0.0, 0.0),
             (-1 / 12 * (2 + 2 ** 0.5), 1 / 12 * (2 - 2 ** 0.5), 1 / 6),
@@ -167,7 +169,7 @@ def test_multi_segment_non_axis_aligned_bspline_radius() -> None:
             (-1.0 / 6.0, 1.0 / 2.0, 1.0 / (3.0 * (2 ** 0.5))),
         ]
     )
-    curve = BSplineCurve(vertices)
+    curve = BSplineCurve(control_points)
     nominal_radii = np.array(
         # computed using Mathematica's BSplineFunction over
         # np.linspace(0.0, 3.0, num=13) (inputs scaled by 1/3)
@@ -201,7 +203,7 @@ def test_non_unit_length_bspline_radius() -> None:
     the number of segments of the b-spline.
     """
     # a multi-displacement b-spline with length=4.0
-    vertices = np.array(
+    control_points = np.array(
         [
             (0.0, 0.0, 0.0),
             (2.0, 0.0, 0.0),
@@ -209,7 +211,7 @@ def test_non_unit_length_bspline_radius() -> None:
             (2.0, 1.0, 1.0),
         ]
     )
-    curve = BSplineCurve(vertices)
+    curve = BSplineCurve(control_points)
     nominal_radii = np.array(
         # computed using Mathematica's BSplineFunction over
         # np.linspace(0.0, 3.0, num=13) (inputs scaled by 1/3)
@@ -238,12 +240,12 @@ def test_non_unit_length_bspline_radius() -> None:
         )
 
 
-def test_repeated_vertex_bspline_radius() -> None:
-    """Tests that a b-spline with a repeated vertex will have its
-    position at that vertex for 1.0 parameter distance.
+def test_repeated_control_point_bspline_radius() -> None:
+    """Tests that a b-spline with a repeated control point will have its
+    position at that control point for 1.0 parameter distance.
     """
-    # a b-spline with a repeated vertex and length=4.0
-    vertices = np.array(
+    # a b-spline with a repeated control point and length=4.0
+    control_points = np.array(
         [
             (0.0, 0.0, 0.0),
             (0.0, 0.0, 0.0),
@@ -252,7 +254,7 @@ def test_repeated_vertex_bspline_radius() -> None:
             (2.0, 1.0, 1.0),
         ]
     )
-    curve = BSplineCurve(vertices)
+    curve = BSplineCurve(control_points)
     nominal_radii = np.array(
         # computed using Mathematica's BSplineFunction over
         # np.linspace(0.0, 3.0, num=13) (inputs scaled by 1/3)
@@ -280,7 +282,7 @@ def test_repeated_vertex_bspline_radius() -> None:
             curve.radius_at(parameter),
             nominal_radii[index],
             err_msg="Fails to find the position along a b-spline with a "
-            "repeated vertex.",
+            "repeated control point.",
         )
 
 
@@ -291,16 +293,16 @@ def test_single_point_bspline_first_derivative() -> None:
     """Tests that along the entire line, a b-spline defined by a single
     point is equal to just that single point.
     """
-    vertices = np.array([(0.0, 0.0, 0.0)])
+    control_points = np.array([(0.0, 0.0, 0.0)])
     knot_vector = np.array([0, 0, 1, 1])
-    curve = BSplineCurve(vertices, knot_vector)
+    curve = BSplineCurve(control_points, knot_vector)
     for parameter in np.linspace(0.0, 1.0, num=5):
         np.testing.assert_allclose(
             curve.first_derivative_at(parameter),
-            vertices[0],
+            [0, 0, 0],
             err_msg=(
-                f"Fails to say that a b-spline defined by {vertices} is "
-                f"equal to {vertices[0]} at parameter {parameter}."
+                f"Fails to say that a b-spline defined by {control_points} is "
+                f"equal to {control_points[0]} at parameter {parameter}."
             ),
         )
 
@@ -310,31 +312,31 @@ def test_single_point_not_origin_bspline_first_derivative() -> None:
     point is equal to just that single point, where that point is not
     the origin.
     """
-    vertices = np.array([(0.0, 0.0, 0.0)])
+    control_points = np.array([(0.0, 0.0, 0.0)])
     knot_vector = np.array([0, 0, 1, 1])
-    curve = BSplineCurve(vertices, knot_vector)
+    curve = BSplineCurve(control_points, knot_vector)
     for parameter in np.linspace(0.0, 1.0, num=5):
         np.testing.assert_allclose(
             curve.first_derivative_at(parameter),
-            vertices[0],
+            [0, 0, 0],
             err_msg=(
-                f"Fails to say that a b-spline defined by {vertices} is "
-                f"equal to {vertices[0]} at parameter {parameter}."
+                f"Fails to say that a b-spline defined by {control_points} is "
+                f"equal to {control_points[0]} at parameter {parameter}."
             ),
         )
 
 
 def test_single_axis_bspline_first_derivative() -> None:
     """Tests that a bspline that only varies along a single axis works."""
-    vertices = np.array([(0.0, 0.0, 0.0), (1.0, 0.0, 0.0)])
-    curve = BSplineCurve(vertices)
+    control_points = np.array([(0.0, 0.0, 0.0), (1.0, 0.0, 0.0)])
+    curve = BSplineCurve(control_points)
     for parameter in np.linspace(0.0, 1.0, num=5):
         position = (parameter, 0.0, 0.0)
         np.testing.assert_allclose(
             curve.first_derivative_at(parameter),
-            position,
+            [1.0, 0.0, 0.0],
             err_msg=f"Fails to say that a bspline defined by "
-            f"{vertices} is equal to {position} at parameter "
+            f"{control_points} is equal to {position} at parameter "
             f"{parameter}.",
         )
 
@@ -342,15 +344,17 @@ def test_single_axis_bspline_first_derivative() -> None:
 def test_two_axis_bspline_first_derivative() -> None:
     """Tests that a bspline that varies in a coordinate plane works."""
     # a length=1.0 curve in 2D
-    vertices = np.array([(0.0, 0.0, 0.0), (2.0 ** -0.5, 2.0 ** -0.5, 0.0)])
-    curve = BSplineCurve(vertices)
+    control_points = np.array(
+        [(0.0, 0.0, 0.0), (2.0 ** -0.5, 2.0 ** -0.5, 0.0)]
+    )
+    curve = BSplineCurve(control_points)
     for parameter in np.linspace(0.0, 1.0, num=5):
-        position = parameter * vertices[1]
+        position = parameter * control_points[1]
         np.testing.assert_allclose(
             curve.first_derivative_at(parameter),
-            position,
+            [2.0 ** -0.5, 2.0 ** -0.5, 0.0],
             err_msg=(
-                f"Fails to say that a bspline defined by {vertices} is "
+                f"Fails to say that a bspline defined by {control_points} is "
                 f"equal to {position} at parameter {parameter}."
             ),
         )
@@ -361,17 +365,17 @@ def test_three_axis_bspline_first_derivative() -> None:
     system has the correct first_derivative vector.
     """
     # a length=1.0 curve in 3D
-    vertices = np.array(
+    control_points = np.array(
         [(0.0, 0.0, 0.0), (3.0 ** -0.5, 3.0 ** -0.5, 3.0 ** -0.5)]
     )
-    curve = BSplineCurve(vertices)
+    curve = BSplineCurve(control_points)
     for parameter in np.linspace(0.0, 1.0, num=5):
         position = tuple(parameter * (3.0 ** -0.5) for _ in range(3))
         np.testing.assert_allclose(
             curve.first_derivative_at(parameter),
-            position,
+            [3.0 ** -0.5, 3.0 ** -0.5, 3.0 ** -0.5],
             err_msg=(
-                f"Fails to say that a bspline defined by {vertices} is "
+                f"Fails to say that a bspline defined by {control_points} is "
                 f"equal to {position} at parameter {parameter}."
             ),
         )
@@ -382,7 +386,7 @@ def test_multi_displacement_bspline_first_derivative() -> None:
     correct first derivative vector.
     """
     # a length=1.0 curve with displacements along each axis.
-    vertices = np.array(
+    control_points = np.array(
         [
             (0.0, 0.0, 0.0),
             (1.0 / 3.0, 0.0, 0.0),
@@ -390,8 +394,8 @@ def test_multi_displacement_bspline_first_derivative() -> None:
             (1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0),
         ]
     )
-    curve = BSplineCurve(vertices)
-    nominal_radii = np.array(
+    curve = BSplineCurve(control_points)
+    nominal_first_derivatives = np.array(
         # computed using Mathematica's BSplineFunction over
         # np.linspace(0.0, 3.0, num=10) (inputs scaled by 1/3)
         [
@@ -410,7 +414,7 @@ def test_multi_displacement_bspline_first_derivative() -> None:
     for index, parameter in np.ndenumerate(np.linspace(0.0, 3.0, num=10)):
         np.testing.assert_allclose(
             curve.first_derivative_at(parameter),
-            nominal_radii[index],
+            nominal_first_derivatives[index],
             err_msg=(
                 "Fails to find the first_derivative along a "
                 "multi-displacement bspline."
@@ -424,7 +428,7 @@ def test_multi_segment_non_axis_aligned_bspline_first_derivative() -> None:
     """
     # a length=1.0 3-segment b-spline that isn't axis aligned.  Each
     # segment is length=1/3.
-    vertices = np.array(
+    control_points = np.array(
         [
             (0.0, 0.0, 0.0),
             (-1 / 12 * (2 + 2 ** 0.5), 1 / 12 * (2 - 2 ** 0.5), 1 / 6),
@@ -432,8 +436,8 @@ def test_multi_segment_non_axis_aligned_bspline_first_derivative() -> None:
             (-1.0 / 6.0, 1.0 / 2.0, 1.0 / (3.0 * (2 ** 0.5))),
         ]
     )
-    curve = BSplineCurve(vertices)
-    nominal_radii = np.array(
+    curve = BSplineCurve(control_points)
+    nominal_first_derivatives = np.array(
         # computed using Mathematica's BSplineFunction over
         # np.linspace(0.0, 3.0, num=13) (inputs scaled by 1/3)
         [
@@ -455,7 +459,7 @@ def test_multi_segment_non_axis_aligned_bspline_first_derivative() -> None:
     for index, parameter in np.ndenumerate(np.linspace(0.0, 3.0, num=13)):
         np.testing.assert_allclose(
             curve.first_derivative_at(parameter),
-            nominal_radii[index],
+            nominal_first_derivatives[index],
             err_msg="Fails to find the position along a multi-displacement "
             "non-axis-aligned b-spline.",
         )
@@ -466,7 +470,7 @@ def test_non_unit_length_bspline_first_derivative() -> None:
     the number of segments of the b-spline.
     """
     # a multi-displacement b-spline with length=4.0
-    vertices = np.array(
+    control_points = np.array(
         [
             (0.0, 0.0, 0.0),
             (2.0, 0.0, 0.0),
@@ -474,8 +478,8 @@ def test_non_unit_length_bspline_first_derivative() -> None:
             (2.0, 1.0, 1.0),
         ]
     )
-    curve = BSplineCurve(vertices)
-    nominal_radii = np.array(
+    curve = BSplineCurve(control_points)
+    nominal_first_derivatives = np.array(
         # computed using Mathematica's BSplineFunction over
         # np.linspace(0.0, 3.0, num=13) (inputs scaled by 1/3)
         [
@@ -497,18 +501,18 @@ def test_non_unit_length_bspline_first_derivative() -> None:
     for index, parameter in np.ndenumerate(np.linspace(0.0, 3.0, num=13)):
         np.testing.assert_allclose(
             curve.first_derivative_at(parameter),
-            nominal_radii[index],
+            nominal_first_derivatives[index],
             err_msg="Fails to find the position along a multi-displacement "
             "b-spline with non-unit length.",
         )
 
 
-def test_repeated_vertex_bspline_first_derivative() -> None:
-    """Tests that a b-spline with a repeated vertex will have its
-    position at that vertex for 1.0 parameter distance.
+def test_repeated_control_point_bspline_first_derivative() -> None:
+    """Tests that a b-spline with a repeated control point will have its
+    position at that control point for 1.0 parameter distance.
     """
-    # a b-spline with a repeated vertex and length=4.0
-    vertices = np.array(
+    # a b-spline with a repeated control point and length=4.0
+    control_points = np.array(
         [
             (0.0, 0.0, 0.0),
             (0.0, 0.0, 0.0),
@@ -517,8 +521,8 @@ def test_repeated_vertex_bspline_first_derivative() -> None:
             (2.0, 1.0, 1.0),
         ]
     )
-    curve = BSplineCurve(vertices)
-    nominal_radii = np.array(
+    curve = BSplineCurve(control_points)
+    nominal_first_derivatives = np.array(
         # computed using Mathematica's BSplineFunction over
         # np.linspace(0.0, 3.0, num=13) (inputs scaled by 1/3)
         [
@@ -543,7 +547,7 @@ def test_repeated_vertex_bspline_first_derivative() -> None:
     for index, parameter in np.ndenumerate(np.linspace(0.0, 4.0, num=17)):
         np.testing.assert_allclose(
             curve.first_derivative_at(parameter),
-            nominal_radii[index],
+            nominal_first_derivatives[index],
             err_msg="Fails to find the position along a b-spline with a "
-            "repeated vertex.",
+            "repeated control point.",
         )

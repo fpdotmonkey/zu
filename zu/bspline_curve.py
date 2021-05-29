@@ -30,7 +30,7 @@ class BSplineCurve(AnalyticCurve):
 
     def __init__(
         self,
-        vertices: np.ndarray,
+        control_points: np.ndarray,
         knot_vector: Optional[np.ndarray] = None,
         order: int = 3,
         periodic: bool = False,
@@ -38,10 +38,10 @@ class BSplineCurve(AnalyticCurve):
     ) -> None:
         """Constructs a new B-Spline curve
 
-        :param      vertices:     The vertices defining the spline.
-        :type       vertices:     numpy.ndarray
-        :param      order:        The order of the spline.
-        :type       order:        int
-        :param      knot_vector:  The knot the spline is constructed on.
-        :type       knot_vector:  numpy.ndarray
+        :param      control_points: The control_points defining the spline.
+        :type       control_points: numpy.ndarray
+        :param      order:          The order of the spline.
+        :type       order:          int
+        :param      knot_vector:    The knot the spline is constructed on.
+        :type       knot_vector:    numpy.ndarray
         """
