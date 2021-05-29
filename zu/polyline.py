@@ -35,8 +35,14 @@ class Polyline(AnalyticCurve):
             )
 
         self._control_points: np.ndarray = control_points
-        self._number_of_control_points = self._control_points.shape[0]
-        print(self._number_of_control_points - 1)
+        number_of_control_points = self._control_points.shape[0]
+
+        bounds = (
+            (0, number_of_control_points - 1)
+            if number_of_control_points > 1
+            else (np.NINF, np.inf)
+        )
+
         super().__init__(
             (
                 _radius_function(self._control_points),
@@ -44,7 +50,7 @@ class Polyline(AnalyticCurve):
                 lambda parameter: np.array([0, 0, 0]),
                 lambda parameter: np.array([0, 0, 0]),
             ),
-            bounds=(0, self._number_of_control_points),
+            bounds=bounds,
         )
 
 
