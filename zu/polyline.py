@@ -36,185 +36,125 @@ class Polyline(AnalyticCurve):
 
         self._control_points: np.ndarray = control_points
         self._number_of_control_points = self._control_points.shape[0]
-        self._set_control_point_parameters_to(
-            np.array([float(i) for i in range(self._number_of_control_points)])
-        )
 
         super().__init__(
             (
-                self._radius_function(self._control_points),
-                self._first_derivative_function(self._control_points),
+                _radius_function(self._control_points),
+                _first_derivative_function(self._control_points),
                 lambda parameter: np.array([0, 0, 0]),
                 lambda parameter: np.array([0, 0, 0]),
             ),
             bounds=(0, self._number_of_control_points + 1),
         )
 
-    def _radius_function(
-        self, control_points: np.ndarray
-    ) -> Callable[[float], npt.ArrayLike]:
-        """Computes a polyline that goes through each of the control_points
-        and returns a function that gives the line's coordinates given a
-        parameter.
 
-        :param      control_points:  The points through which the polyline
-                                     will go.
-        :type       control_points:  numpy.ndarray
+def _radius_function(
+    control_points: np.ndarray,
+) -> Callable[[float], npt.ArrayLike]:
+    """Computes a polyline that goes through each of the control_points
+    and returns a function that gives the line's coordinates given a
+    parameter.
 
-        :returns:   A function that takes a parameter and returns a
-                    radius vector.
-        :rtype:     Callable[[float], npt.ArrayLike]
-        """
-        if control_points.shape[0] == 1:
-            logging.debug(
-                "There is only one control point, so for all parameters, the "
-                "position must be at this point %s.",
-                self._control_points[0],
-            )
-            return lambda parameter: self._control_points[0]
+    :param      control_points:  The points through which the polyline
+                                 will go.
+    :type       control_points:  numpy.ndarray
 
-        def radius(parameter: float) -> npt.ArrayLike:
-            """
-            Computes the radius of a general polyline.
+    :returns:   A function that takes a parameter and returns a
+                radius vector.
+    :rtype:     Callable[[float], npt.ArrayLike]
+    """
+    if control_points.shape[0] == 1:
+        logging.debug(
+            "There is only one control point, so for all "
+            "parameters, the radius of the polyline at this point "
+            "is %s.",
+            control_points[0],
+        )
+        return lambda parameter: control_points[0]
 
-            :param      parameter:  The parameter along the curve to
-                                    take the radius vector.
-            :type       parameter:  float
+    def radius(parameter: float) -> npt.ArrayLike:
+        """Computes the radius of a general polyline.
 
-            :returns:   The radius vector.
-            :rtype:     numpy.typing.ArrayLike
-            """
-            lower_control_point_index = np.where(
-                self._control_point_parameters <= parameter
-            )[0].max()
-            if np.isclose(
-                self._control_point_parameters[lower_control_point_index],
-                self._control_point_parameters[-1],
-            ):
-                # parameter is at its max
-                position = self._control_points[-1]
-                logging.debug(
-                    "Interpolated radius at parameter %f, which is the "
-                    "end of the polyline, getting %s.",
-                    parameter,
-                    position,
-                )
-                return position
-            upper_control_point_index = np.where(
-                self._control_point_parameters > parameter
-            )[0].min()
-            lower_control_point = self._control_points[
-                lower_control_point_index
-            ]
-            upper_control_point = self._control_points[
-                upper_control_point_index
-            ]
-            local_parameter = (
-                parameter
-                - self._control_point_parameters[lower_control_point_index]
-            ) / (
-                self._control_point_parameters[upper_control_point_index]
-                - self._control_point_parameters[lower_control_point_index]
-            )
+        :param      parameter:  The parameter along the curve to
+                                take the radius vector.
+        :type       parameter:  float
 
-            position = lower_control_point * (1 - local_parameter) + (
-                upper_control_point * local_parameter
-            )
-            logging.debug(
-                "Interpolated radius at parameter %s, which is between "
-                "%s and %s, and got %s.",
-                parameter,
-                lower_control_point,
-                upper_control_point,
-                position,
-            )
-
-            return position
-
-        return radius
-
-    def _first_derivative_function(
-        self, control_points: np.ndarray
-    ) -> Callable[[float], npt.ArrayLike]:
-        """Computes a function that gives the rate of change of the
-        curve with respect to the parameter and return it.
-
-        :param      control_points:  The points through which the polyline
-                                     will go.
-        :type       control_points:  numpy.ndarray
-
-        :returns:   A vector in the direction of the first derivative.
+        :returns:   The radius vector.
         :rtype:     numpy.typing.ArrayLike
         """
-        if control_points.shape[0] == 1:
+        index, local_parameter = np.divmod(parameter, 1)
+        index = index.astype(int)
+        if index == control_points.shape[0] - 1:
             logging.debug(
-                "There is only one control point, so for all parameters, the "
-                "first derivative must be [0, 0, 0].",
+                "Interpolated radius at parameter %f, which is the "
+                "end of the polyline, getting %s.",
+                parameter,
+                control_points[-1],
             )
-            return lambda parameter: np.array([0, 0, 0])
+            return control_points[-1]
+        radius = control_points[index] * (1 - local_parameter) + (
+            control_points[index + 1] * local_parameter
+        )
+        logging.debug(
+            "Computing in the general case, parameter %f gives "
+            "the polyline radius of %s.",
+            parameter,
+            radius,
+        )
+        return radius
 
-        def first_derivative(parameter: float) -> npt.ArrayLike:
-            """
-            Computes the first derivative of a general polyline.
+    return radius
 
-            :param      parameter:  The parameter along the curve to
-                                    take the radius vector.
-            :type       parameter:  float
 
-            :returns:   The first derivative vector.
-            :rtype:     numpy.typing.ArrayLike
-            """
-            lower_control_point_index = np.where(
-                self._control_point_parameters <= parameter
-            )[0].max()
-            if np.isclose(
-                self._control_point_parameters[lower_control_point_index],
-                self._control_point_parameters[-1],
-            ):
-                # parameter is at its max
-                position = self._control_points[-1] - self._control_points[-2]
-                logging.debug(
-                    "Interpolated first derivative at parameter %f, "
-                    "which is the end of the polyline, getting %s.",
-                    parameter,
-                    position,
-                )
-                return position
-            upper_control_point_index = np.where(
-                self._control_point_parameters > parameter
-            )[0].min()
-            lower_control_point = self._control_points[
-                lower_control_point_index
-            ]
-            upper_control_point = self._control_points[
-                upper_control_point_index
-            ]
+def _first_derivative_function(
+    control_points: np.ndarray,
+) -> Callable[[float], npt.ArrayLike]:
+    """Computes a function that gives the rate of change of the
+    curve with respect to the parameter and return it.
 
-            position = upper_control_point - lower_control_point
+    :param      control_points:  The points through which the polyline
+                                 will go.
+    :type       control_points:  numpy.ndarray
+
+    :returns:   A vector in the direction of the first derivative.
+    :rtype:     numpy.typing.ArrayLike
+    """
+    if control_points.shape[0] == 1:
+        logging.debug(
+            "There is only one control point, so for all parameters, the "
+            "first derivative of the polyline must be [0, 0, 0].",
+        )
+        return lambda parameter: np.array([0, 0, 0])
+
+    def first_derivative(parameter: float) -> npt.ArrayLike:
+        """
+        Computes the first derivative of a general polyline.
+
+        :param      parameter:  The parameter along the curve to
+                                take the first derivative vector.
+        :type       parameter:  float
+
+        :returns:   The first derivative vector.
+        :rtype:     numpy.typing.ArrayLike
+        """
+        index = np.floor(parameter)
+        index = index.astype(int)
+        if index == control_points.shape[0] - 1:
+            first_derivative = control_points[-1] - control_points[-2]
             logging.debug(
-                "Calculating the first derivative as the difference "
-                "between the position of the two adjacent control_points.",
+                "Interpolated first derivative at parameter %f, "
+                "which is the end of the polyline, getting %s.",
+                parameter,
+                first_derivative,
             )
-
-            return position
-
+            return first_derivative
+        first_derivative = control_points[index + 1] - control_points[index]
+        logging.debug(
+            "Computing in the general case, parameter %f gives "
+            "the polyline first derivative of %s.",
+            parameter,
+            first_derivative,
+        )
         return first_derivative
 
-    def _set_control_point_parameters_to(self, parameters: np.ndarray) -> None:
-        """Sets the parameters that each control point is at.  The input list
-        of parameters must be the same length as the the number of
-        control_points or else this will throw an AssertionError.
-
-        :param      parameters:     The parameters that each control point is
-                                    located at.
-        :type       parameters:     numpy.ndarray
-
-        :raises     AssertionError: If the number of parameter is not
-                                    the same as the number of control_points.
-        """
-        assert len(parameters) == self._number_of_control_points, (
-            "There are not enought parameter lengths for the number of "
-            "control_points."
-        )
-        logging.debug("Setting control point parameters to %s", parameters)
-        self._control_point_parameters = parameters
+    return first_derivative
