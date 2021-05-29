@@ -493,3 +493,38 @@ def test_third_derivative() -> None:
             err_msg="Fails to give the third derivative of a polyline "
             "as being [0, 0, 0].",
         )
+
+
+def test_below_bounds_raises() -> None:
+    """If a parameter that's passed in has value < 0.0, then it should
+    raise Polyline.BelowBounds.
+    """
+    control_points = np.array(
+        [
+            (0.0, 0.0, 0.0),
+            (2.0, 0.0, 0.0),
+            (2.0, 1.0, 0.0),
+            (2.0, 1.0, 1.0),
+        ]
+    )
+    curve = Polyline(control_points)
+    with pytest.raises(Polyline.BelowBounds):
+        curve.radius_at(-0.0001)
+
+
+def test_above_bounds_raises() -> None:
+    """If a parameter that's passed in has value greater than the index
+    of the last control point, then it should raise
+    Polyline.AboveBounds.
+    """
+    control_points = np.array(
+        [
+            (0.0, 0.0, 0.0),
+            (2.0, 0.0, 0.0),
+            (2.0, 1.0, 0.0),
+            (2.0, 1.0, 1.0),
+        ]
+    )
+    curve = Polyline(control_points)
+    with pytest.raises(Polyline.AboveBounds):
+        curve.radius_at(3.0001)
