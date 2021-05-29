@@ -261,7 +261,8 @@ class AnalyticCurve:
         """Computes the 3-vector second derivative at parameter and
         returns it.
 
-        :param      parameter:  The parameter along the curve.        :type       parameter:  float
+        :param      parameter:  The parameter along the curve.
+        :type       parameter:  float
 
         :returns:   The second derivative vector.
         :rtype:     numpy.typing.ArrayLike
@@ -450,7 +451,8 @@ class AnalyticCurve:
         r"""This calculates the normal vector of the curve at
         parameter.
 
-        :param      parameter:  The parameter along the curve.        :type       parameter:  float
+        :param      parameter:  The parameter along the curve.
+        :type       parameter:  float
 
         :returns:   The normal vector of the curve.
         :rtype:     numpy.typing.ArrayLike
