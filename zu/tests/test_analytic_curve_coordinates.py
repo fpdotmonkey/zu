@@ -4,15 +4,15 @@ Unit tests to verify that analytic curves are well-behaved.
 
 import logging
 
-import numpy as np  # pylint: disable=duplicate-code
-import pytest  # pylint: disable=duplicate-code
+import numpy as np
+import pytest
 
-from zu.analytic_curve import AnalyticCurve  # pylint: disable=duplicate-code
+from zu.analytic_curve import AnalyticCurve
 
 
-npt = np.typing  # pylint: disable=duplicate-code
+npt = np.typing
 
-logging.getLogger().setLevel(logging.DEBUG)  # pylint: disable=duplicate-code
+logging.getLogger().setLevel(logging.DEBUG)
 
 
 # not enough coordinates
@@ -36,7 +36,7 @@ def test_constant_curve_radius() -> None:
     """
     position = [0.0, 0.0, 0.0]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: np.array(position),
             lambda parameter: np.array([0.0, 0.0, 0.0]),
@@ -61,7 +61,7 @@ def test_linear_single_axis_curve_radius() -> None:
     """
     velocity = [1.0, 0.0, 0.0]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: parameter * np.array(velocity),
             lambda parameter: np.array(velocity),
@@ -87,7 +87,7 @@ def test_quadratic_single_axis_curve_radius() -> None:
     """
     acceleration = [1.0, 0.0, 0.0]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: 0.5 * (parameter ** 2) * np.array(acceleration),
             lambda parameter: parameter * np.array(acceleration),
@@ -115,7 +115,7 @@ def test_constant_not_origin_curve_radius() -> None:
     """
     position = [1.61, -2.71, 3.14]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: np.array(position),
             lambda parameter: np.array([0.0, 0.0, 0.0]),
@@ -142,7 +142,7 @@ def test_linear_off_axis_curve_radius() -> None:
     """
     velocity = [1.61, -2.71, 3.14]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: parameter * np.array(velocity),
             lambda parameter: np.array(velocity),
@@ -169,7 +169,7 @@ def test_quadratic_off_axis_curve_radius() -> None:
     """
     acceleration = [1.61, -2.71, 3.14]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: 0.5 * (parameter ** 2) * np.array(acceleration),
             lambda parameter: parameter * np.array(acceleration),
@@ -193,7 +193,7 @@ def test_quadratic_off_axis_curve_radius() -> None:
 def test_non_linear_curve_radius() -> None:
     """Test that a non-linear curve gives the correct radius."""
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: np.array(
                 [np.cos(parameter), np.sin(parameter), parameter]
@@ -231,7 +231,7 @@ def test_constant_curve_first_derivative() -> None:
     """
     position = [0.0, 0.0, 0.0]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: np.array(position),
             lambda parameter: np.array([0.0, 0.0, 0.0]),
@@ -257,7 +257,7 @@ def test_linear_single_axis_curve_first_derivative() -> None:
     """
     velocity = [1.0, 0.0, 0.0]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: parameter * np.array(velocity),
             lambda parameter: np.array(velocity),
@@ -284,7 +284,7 @@ def test_quadratic_single_axis_curve_first_derivative() -> None:
     """
     acceleration = [1.0, 0.0, 0.0]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: 0.5 * (parameter ** 2) * np.array(acceleration),
             lambda parameter: parameter * np.array(acceleration),
@@ -312,7 +312,7 @@ def test_constant_not_origin_curve_first_derivative() -> None:
     """
     position = [1.61, -2.71, 3.14]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: np.array(position),
             lambda parameter: np.array([0.0, 0.0, 0.0]),
@@ -339,7 +339,7 @@ def test_linear_off_axis_curve_first_derivative() -> None:
     """
     velocity = [1.61, -2.71, 3.14]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: parameter * np.array(velocity),
             lambda parameter: np.array(velocity),
@@ -366,7 +366,7 @@ def test_quadratic_off_axis_curve_first_derivative() -> None:
     """
     acceleration = [1.61, -2.71, 3.14]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: 0.5 * (parameter ** 2) * np.array(acceleration),
             lambda parameter: parameter * np.array(acceleration),
@@ -388,7 +388,7 @@ def test_quadratic_off_axis_curve_first_derivative() -> None:
 
 def test_non_linear_curve_first_derivative() -> None:
     """Test that a non-linear curve gives the correct first derivative."""
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: np.array(
                 [np.cos(parameter), np.sin(parameter), parameter]
@@ -426,7 +426,7 @@ def test_constant_curve_second_derivative() -> None:
     """
     position = [0.0, 0.0, 0.0]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: np.array(position),
             lambda parameter: np.array([0.0, 0.0, 0.0]),
@@ -452,7 +452,7 @@ def test_linear_single_axis_curve_second_derivative() -> None:
     """
     velocity = [1.0, 0.0, 0.0]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: parameter * np.array(velocity),
             lambda parameter: np.array(velocity),
@@ -478,7 +478,7 @@ def test_quadratic_single_axis_curve_second_derivative() -> None:
     """
     acceleration = [1.0, 0.0, 0.0]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: 0.5 * (parameter ** 2) * np.array(acceleration),
             lambda parameter: parameter * np.array(acceleration),
@@ -505,7 +505,7 @@ def test_constant_not_origin_curve_second_derivative() -> None:
     """
     position = [1.61, -2.71, 3.14]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: np.array(position),
             lambda parameter: np.array([0.0, 0.0, 0.0]),
@@ -532,7 +532,7 @@ def test_linear_off_axis_curve_second_derivative() -> None:
     """
     velocity = [1.61, -2.71, 3.14]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: parameter * np.array(velocity),
             lambda parameter: np.array(velocity),
@@ -558,7 +558,7 @@ def test_quadratic_off_axis_curve_second_derivative() -> None:
     """
     acceleration = [1.61, -2.71, 3.14]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: 0.5 * (parameter ** 2) * np.array(acceleration),
             lambda parameter: parameter * np.array(acceleration),
@@ -582,7 +582,7 @@ def test_non_linear_curve_second_derivative() -> None:
     """Test that a non-linear curve gives the correct second
     derivative.
     """
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: np.array(
                 [np.cos(parameter), np.sin(parameter), parameter]
@@ -620,7 +620,7 @@ def test_constant_curve_third_derivative() -> None:
     """
     position = [0.0, 0.0, 0.0]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: np.array(position),
             lambda parameter: np.array([0.0, 0.0, 0.0]),
@@ -646,7 +646,7 @@ def test_linear_single_axis_curve_third_derivative() -> None:
     """
     velocity = [1.0, 0.0, 0.0]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: parameter * np.array(velocity),
             lambda parameter: np.array(velocity),
@@ -672,7 +672,7 @@ def test_quadratic_single_axis_curve_third_derivative() -> None:
     """
     acceleration = [1.0, 0.0, 0.0]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: 0.5 * (parameter ** 2) * np.array(acceleration),
             lambda parameter: parameter * np.array(acceleration),
@@ -699,7 +699,7 @@ def test_constant_not_origin_curve_third_derivative() -> None:
     """
     position = [1.61, -2.71, 3.14]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: np.array(position),
             lambda parameter: np.array([0.0, 0.0, 0.0]),
@@ -726,7 +726,7 @@ def test_linear_off_axis_curve_third_derivative() -> None:
     """
     velocity = [1.61, -2.71, 3.14]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: parameter * np.array(velocity),
             lambda parameter: np.array(velocity),
@@ -752,7 +752,7 @@ def test_quadratic_off_axis_curve_third_derivative() -> None:
     """
     acceleration = [1.61, -2.71, 3.14]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: 0.5 * (parameter ** 2) * np.array(acceleration),
             lambda parameter: parameter * np.array(acceleration),
@@ -779,7 +779,7 @@ def test_cubic_off_axis_curve_third_derivative() -> None:
     """
     jerk = [1.61, -2.71, 3.14]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: 1.0 / 6.0 * (parameter ** 3) * np.array(jerk),
             lambda parameter: 0.5 * (parameter ** 2) * np.array(jerk),
@@ -803,7 +803,7 @@ def test_non_linear_curve_third_derivative() -> None:
     """Test that a non-linear curve gives the correct third
     derivative.
     """
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: np.array(
                 [np.cos(parameter), np.sin(parameter), parameter]

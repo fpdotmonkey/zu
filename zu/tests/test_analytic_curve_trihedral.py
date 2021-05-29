@@ -6,16 +6,16 @@ tests for the curvature and torsion of the curves.
 
 # pylint: disable=too-many-lines
 
-import logging  # pylint: disable=duplicate-code
+import logging
 
-import numpy as np  # pylint: disable=duplicate-code
+import numpy as np
 
-from zu.analytic_curve import AnalyticCurve  # pylint: disable=duplicate-code
+from zu.analytic_curve import AnalyticCurve
 
 
-npt = np.typing  # pylint: disable=duplicate-code
+npt = np.typing
 
-logging.getLogger().setLevel(logging.DEBUG)  # pylint: disable=duplicate-code
+logging.getLogger().setLevel(logging.DEBUG)
 
 
 # tangent vector
@@ -26,22 +26,14 @@ def test_constant_curve_tangent_vector() -> None:
     of the parameter (which is defined for all reals) has tangent of
     [0, 0, 0].
     """
-    position = [0.0, 0.0, 0.0]  # pylint: disable=duplicate-code
+    position = [0.0, 0.0, 0.0]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
-            lambda parameter: np.array(
-                [position]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array([position]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
         )
     )
 
@@ -59,21 +51,14 @@ def test_linear_single_axis_curve_tangent_vector() -> None:
     the entire range of the parameter (which is defined for all reals)
     has the correct tangent vector.
     """
-    velocity = [1.0, 0.0, 0.0]  # pylint: disable=duplicate-code
+    velocity = [1.0, 0.0, 0.0]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
-            lambda parameter: parameter
-            * np.array(velocity),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                velocity
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
+            lambda parameter: parameter * np.array(velocity),
+            lambda parameter: np.array(velocity),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
         )
     )
 
@@ -91,21 +76,14 @@ def test_quadratic_single_axis_curve_tangent_vector() -> None:
     over the entire range of the parameter (which is defined for all
     reals) has the correct tangent vector.
     """
-    acceleration = [1.0, 0.0, 0.0]  # pylint: disable=duplicate-code
+    acceleration = [1.0, 0.0, 0.0]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
-            lambda parameter: 0.5
-            * (parameter ** 2)
-            * np.array(acceleration),  # pylint: disable=duplicate-code
-            lambda parameter: parameter
-            * np.array(acceleration),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                acceleration
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
+            lambda parameter: 0.5 * (parameter ** 2) * np.array(acceleration),
+            lambda parameter: parameter * np.array(acceleration),
+            lambda parameter: np.array(acceleration),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
         )
     )
 
@@ -124,22 +102,14 @@ def test_constant_not_origin_curve_tangent_vector() -> None:
     of the parameter (which is defined for all reals) has tangent vector
     of [0, 0, 0].
     """
-    position = [1.61, -2.71, 3.14]  # pylint: disable=duplicate-code
+    position = [1.61, -2.71, 3.14]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
-            lambda parameter: np.array(
-                [position]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array([position]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
         )
     )
 
@@ -158,21 +128,14 @@ def test_linear_off_axis_curve_tangent_vector() -> None:
     the entire range of the parameter (which is defined for all reals)
     has the correct tangent vector.
     """
-    velocity = [1.61, -2.71, 3.14]  # pylint: disable=duplicate-code
+    velocity = [1.61, -2.71, 3.14]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
-            lambda parameter: parameter
-            * np.array(velocity),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                velocity
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
+            lambda parameter: parameter * np.array(velocity),
+            lambda parameter: np.array(velocity),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
         )
     )
 
@@ -192,21 +155,14 @@ def test_quadratic_off_axis_curve_tangent_vector() -> None:
     over the entire range of the parameter (which is defined for all
     reals) has the correct tangent vector.
     """
-    acceleration = [1.61, -2.71, 3.14]  # pylint: disable=duplicate-code
+    acceleration = [1.61, -2.71, 3.14]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
-            lambda parameter: 0.5
-            * (parameter ** 2)
-            * np.array(acceleration),  # pylint: disable=duplicate-code
-            lambda parameter: parameter
-            * np.array(acceleration),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                acceleration
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
+            lambda parameter: 0.5 * (parameter ** 2) * np.array(acceleration),
+            lambda parameter: parameter * np.array(acceleration),
+            lambda parameter: np.array(acceleration),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
         )
     )
 
@@ -227,17 +183,17 @@ def test_quadratic_off_axis_curve_tangent_vector() -> None:
 
 def test_non_linear_curve_tangent_vector() -> None:
     """Test that a non-linear curve gives the correct tangent vector."""
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: np.array(
                 [np.cos(parameter), np.sin(parameter), parameter]
-            ),  # pylint: disable=duplicate-code
+            ),
             lambda parameter: np.array(
                 [-np.sin(parameter), np.cos(parameter), 1.0]
-            ),  # pylint: disable=duplicate-code
+            ),
             lambda parameter: np.array(
                 [-np.cos(parameter), -np.sin(parameter), 0.0]
-            ),  # pylint: disable=duplicate-code
+            ),
             lambda parameter: np.array(
                 [np.sin(parameter), -np.cos(parameter), 0.0]
             ),
@@ -265,22 +221,14 @@ def test_constant_curve_normal_vector() -> None:
     of the parameter (which is defined for all reals) has normal of
     [0, 0, 0].
     """
-    position = [0.0, 0.0, 0.0]  # pylint: disable=duplicate-code
+    position = [0.0, 0.0, 0.0]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
-            lambda parameter: np.array(
-                [position]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array([position]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
         )
     )
 
@@ -298,21 +246,14 @@ def test_linear_single_axis_curve_normal_vector() -> None:
     the entire range of the parameter (which is defined for all reals)
     has the correct normal vector.
     """
-    velocity = [1.0, 0.0, 0.0]  # pylint: disable=duplicate-code
+    velocity = [1.0, 0.0, 0.0]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
-            lambda parameter: parameter
-            * np.array(velocity),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                velocity
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
+            lambda parameter: parameter * np.array(velocity),
+            lambda parameter: np.array(velocity),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
         )
     )
 
@@ -346,21 +287,14 @@ def test_quadratic_single_axis_curve_normal_vector() -> None:
     over the entire range of the parameter (which is defined for all
     reals) has the correct normal vector.
     """
-    acceleration = [1.0, 0.0, 0.0]  # pylint: disable=duplicate-code
+    acceleration = [1.0, 0.0, 0.0]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
-            lambda parameter: 0.5
-            * (parameter ** 2)
-            * np.array(acceleration),  # pylint: disable=duplicate-code
-            lambda parameter: parameter
-            * np.array(acceleration),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                acceleration
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
+            lambda parameter: 0.5 * (parameter ** 2) * np.array(acceleration),
+            lambda parameter: parameter * np.array(acceleration),
+            lambda parameter: np.array(acceleration),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
         )
     )
 
@@ -387,22 +321,14 @@ def test_constant_not_origin_curve_normal_vector() -> None:
     of the parameter (which is defined for all reals) has normal vector
     of [0, 0, 0].
     """
-    position = [1.61, -2.71, 3.14]  # pylint: disable=duplicate-code
+    position = [1.61, -2.71, 3.14]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
-            lambda parameter: np.array(
-                [position]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array([position]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
         )
     )
 
@@ -421,21 +347,14 @@ def test_linear_off_axis_curve_normal_vector() -> None:
     the entire range of the parameter (which is defined for all reals)
     has the correct normal vector.
     """
-    velocity = [1.61, -2.71, 3.14]  # pylint: disable=duplicate-code
+    velocity = [1.61, -2.71, 3.14]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
-            lambda parameter: parameter
-            * np.array(velocity),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                velocity
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
+            lambda parameter: parameter * np.array(velocity),
+            lambda parameter: np.array(velocity),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
         )
     )
 
@@ -462,21 +381,14 @@ def test_quadratic_off_axis_curve_normal_vector() -> None:
     over the entire range of the parameter (which is defined for all
     reals) has the correct normal vector.
     """
-    acceleration = [1.61, -2.71, 3.14]  # pylint: disable=duplicate-code
+    acceleration = [1.61, -2.71, 3.14]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
-            lambda parameter: 0.5
-            * (parameter ** 2)
-            * np.array(acceleration),  # pylint: disable=duplicate-code
-            lambda parameter: parameter
-            * np.array(acceleration),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                acceleration
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
+            lambda parameter: 0.5 * (parameter ** 2) * np.array(acceleration),
+            lambda parameter: parameter * np.array(acceleration),
+            lambda parameter: np.array(acceleration),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
         )
     )
 
@@ -500,17 +412,17 @@ def test_quadratic_off_axis_curve_normal_vector() -> None:
 
 def test_non_linear_curve_normal_vector() -> None:
     """Test that a non-linear curve gives the correct normal vector."""
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: np.array(
                 [np.cos(parameter), np.sin(parameter), parameter]
-            ),  # pylint: disable=duplicate-code
+            ),
             lambda parameter: np.array(
                 [-np.sin(parameter), np.cos(parameter), 1.0]
-            ),  # pylint: disable=duplicate-code
+            ),
             lambda parameter: np.array(
                 [-np.cos(parameter), -np.sin(parameter), 0.0]
-            ),  # pylint: disable=duplicate-code
+            ),
             lambda parameter: np.array(
                 [np.sin(parameter), -np.cos(parameter), 0.0]
             ),
@@ -530,7 +442,7 @@ def test_non_linear_curve_normal_vector() -> None:
 
 def test_zero_first_derivative_normal() -> None:
     """Test that a non-linear curve gives the correct normal vector."""
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: np.array([1, 1, 1]),
             lambda parameter: np.array([0, 0, 0]),
@@ -558,22 +470,14 @@ def test_constant_curve_binormal_vector() -> None:
     of the parameter (which is defined for all reals) has binormal of
     [0, 0, 0].
     """
-    position = [0.0, 0.0, 0.0]  # pylint: disable=duplicate-code
+    position = [0.0, 0.0, 0.0]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
-            lambda parameter: np.array(
-                [position]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array([position]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
         )
     )
 
@@ -591,21 +495,14 @@ def test_linear_single_axis_curve_binormal_vector() -> None:
     the entire range of the parameter (which is defined for all reals)
     has the correct binormal vector.
     """
-    velocity = [1.0, 0.0, 0.0]  # pylint: disable=duplicate-code
+    velocity = [1.0, 0.0, 0.0]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
-            lambda parameter: parameter
-            * np.array(velocity),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                velocity
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
+            lambda parameter: parameter * np.array(velocity),
+            lambda parameter: np.array(velocity),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
         )
     )
 
@@ -638,21 +535,14 @@ def test_quadratic_single_axis_curve_binormal_vector() -> None:
     over the entire range of the parameter (which is defined for all
     reals) has the correct binormal vector.
     """
-    acceleration = [1.0, 0.0, 0.0]  # pylint: disable=duplicate-code
+    acceleration = [1.0, 0.0, 0.0]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
-            lambda parameter: 0.5
-            * (parameter ** 2)
-            * np.array(acceleration),  # pylint: disable=duplicate-code
-            lambda parameter: parameter
-            * np.array(acceleration),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                acceleration
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
+            lambda parameter: 0.5 * (parameter ** 2) * np.array(acceleration),
+            lambda parameter: parameter * np.array(acceleration),
+            lambda parameter: np.array(acceleration),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
         )
     )
 
@@ -686,22 +576,14 @@ def test_constant_not_origin_curve_binormal_vector() -> None:
     of the parameter (which is defined for all reals) has binormal vector
     of [0, 0, 0].
     """
-    position = [1.61, -2.71, 3.14]  # pylint: disable=duplicate-code
+    position = [1.61, -2.71, 3.14]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
-            lambda parameter: np.array(
-                [position]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array([position]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
         )
     )
 
@@ -720,21 +602,14 @@ def test_linear_off_axis_curve_binormal_vector() -> None:
     the entire range of the parameter (which is defined for all reals)
     has the correct binormal vector.
     """
-    velocity = [1.61, -2.71, 3.14]  # pylint: disable=duplicate-code
+    velocity = [1.61, -2.71, 3.14]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
-            lambda parameter: parameter
-            * np.array(velocity),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                velocity
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
+            lambda parameter: parameter * np.array(velocity),
+            lambda parameter: np.array(velocity),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
         )
     )
 
@@ -767,21 +642,14 @@ def test_quadratic_off_axis_curve_binormal_vector() -> None:
     over the entire range of the parameter (which is defined for all
     reals) has the correct binormal vector.
     """
-    acceleration = [1.61, -2.71, 3.14]  # pylint: disable=duplicate-code
+    acceleration = [1.61, -2.71, 3.14]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
-            lambda parameter: 0.5
-            * (parameter ** 2)
-            * np.array(acceleration),  # pylint: disable=duplicate-code
-            lambda parameter: parameter
-            * np.array(acceleration),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                acceleration
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
+            lambda parameter: 0.5 * (parameter ** 2) * np.array(acceleration),
+            lambda parameter: parameter * np.array(acceleration),
+            lambda parameter: np.array(acceleration),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
         )
     )
 
@@ -811,17 +679,17 @@ def test_quadratic_off_axis_curve_binormal_vector() -> None:
 
 def test_non_linear_curve_binormal_vector() -> None:
     """Test that a non-linear curve gives the correct binormal vector."""
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: np.array(
                 [np.cos(parameter), np.sin(parameter), parameter]
-            ),  # pylint: disable=duplicate-code
+            ),
             lambda parameter: np.array(
                 [-np.sin(parameter), np.cos(parameter), 1.0]
-            ),  # pylint: disable=duplicate-code
+            ),
             lambda parameter: np.array(
                 [-np.cos(parameter), -np.sin(parameter), 0.0]
-            ),  # pylint: disable=duplicate-code
+            ),
             lambda parameter: np.array(
                 [np.sin(parameter), -np.cos(parameter), 0.0]
             ),
@@ -849,22 +717,14 @@ def test_constant_curve_curvature() -> None:
     of the parameter (which is defined for all reals) has curvature of
     0.0.
     """
-    position = [0.0, 0.0, 0.0]  # pylint: disable=duplicate-code
+    position = [0.0, 0.0, 0.0]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
-            lambda parameter: np.array(
-                [position]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array([position]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
         )
     )
 
@@ -880,21 +740,14 @@ def test_linear_single_axis_curve_curvature() -> None:
     the entire range of the parameter (which is defined for all reals)
     has curvature of 0.
     """
-    velocity = [1.0, 0.0, 0.0]  # pylint: disable=duplicate-code
+    velocity = [1.0, 0.0, 0.0]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
-            lambda parameter: parameter
-            * np.array(velocity),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                velocity
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
+            lambda parameter: parameter * np.array(velocity),
+            lambda parameter: np.array(velocity),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
         )
     )
 
@@ -910,21 +763,14 @@ def test_quadratic_single_axis_curve_curvature() -> None:
     over the entire range of the parameter (which is defined for all
     reals) has a curvature of 0.
     """
-    acceleration = [1.0, 0.0, 0.0]  # pylint: disable=duplicate-code
+    acceleration = [1.0, 0.0, 0.0]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
-            lambda parameter: 0.5
-            * (parameter ** 2)
-            * np.array(acceleration),  # pylint: disable=duplicate-code
-            lambda parameter: parameter
-            * np.array(acceleration),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                acceleration
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
+            lambda parameter: 0.5 * (parameter ** 2) * np.array(acceleration),
+            lambda parameter: parameter * np.array(acceleration),
+            lambda parameter: np.array(acceleration),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
         )
     )
 
@@ -940,22 +786,14 @@ def test_constant_not_origin_curve_curvature() -> None:
     of the parameter (which is defined for all reals) has curvature of
     0.0.
     """
-    position = [1.61, -2.71, 3.14]  # pylint: disable=duplicate-code
+    position = [1.61, -2.71, 3.14]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
-            lambda parameter: np.array(
-                [position]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array([position]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
         )
     )
 
@@ -971,21 +809,14 @@ def test_linear_off_axis_curve_curvature() -> None:
     the entire range of the parameter (which is defined for all reals)
     has curvature of 0.
     """
-    velocity = [1.61, -2.71, 3.14]  # pylint: disable=duplicate-code
+    velocity = [1.61, -2.71, 3.14]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
-            lambda parameter: parameter
-            * np.array(velocity),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                velocity
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
+            lambda parameter: parameter * np.array(velocity),
+            lambda parameter: np.array(velocity),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
         )
     )
 
@@ -1001,21 +832,14 @@ def test_quadratic_off_axis_curve_curvature() -> None:
     over the entire range of the parameter (which is defined for all
     reals) has curvature of 0.
     """
-    acceleration = [1.61, -2.71, 3.14]  # pylint: disable=duplicate-code
+    acceleration = [1.61, -2.71, 3.14]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
-            lambda parameter: 0.5
-            * (parameter ** 2)
-            * np.array(acceleration),  # pylint: disable=duplicate-code
-            lambda parameter: parameter
-            * np.array(acceleration),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                acceleration
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
+            lambda parameter: 0.5 * (parameter ** 2) * np.array(acceleration),
+            lambda parameter: parameter * np.array(acceleration),
+            lambda parameter: np.array(acceleration),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
         )
     )
 
@@ -1028,17 +852,17 @@ def test_quadratic_off_axis_curve_curvature() -> None:
 
 def test_non_linear_curve_curvature() -> None:
     """Test that a non-linear curve gives the correct binormal vector."""
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: np.array(
                 [np.cos(parameter), np.sin(parameter), parameter]
-            ),  # pylint: disable=duplicate-code
+            ),
             lambda parameter: np.array(
                 [-np.sin(parameter), np.cos(parameter), 1.0]
-            ),  # pylint: disable=duplicate-code
+            ),
             lambda parameter: np.array(
                 [-np.cos(parameter), -np.sin(parameter), 0.0]
-            ),  # pylint: disable=duplicate-code
+            ),
             lambda parameter: np.array(
                 [np.sin(parameter), -np.cos(parameter), 0.0]
             ),
@@ -1060,22 +884,14 @@ def test_constant_curve_torsion() -> None:
     """Tests that a curve whose value is constant over the entire range
     of the parameter (which is defined for all reals) has torsion of 0.
     """
-    position = [0.0, 0.0, 0.0]  # pylint: disable=duplicate-code
+    position = [0.0, 0.0, 0.0]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
-            lambda parameter: np.array(
-                [position]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array([position]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
         )
     )
 
@@ -1091,21 +907,14 @@ def test_linear_single_axis_curve_torsion() -> None:
     the entire range of the parameter (which is defined for all reals)
     has torsion of 0.
     """
-    velocity = [1.0, 0.0, 0.0]  # pylint: disable=duplicate-code
+    velocity = [1.0, 0.0, 0.0]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
-            lambda parameter: parameter
-            * np.array(velocity),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                velocity
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
+            lambda parameter: parameter * np.array(velocity),
+            lambda parameter: np.array(velocity),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
         )
     )
 
@@ -1121,21 +930,14 @@ def test_quadratic_single_axis_curve_torsion() -> None:
     over the entire range of the parameter (which is defined for all
     reals) has a torsion of 0.
     """
-    acceleration = [1.0, 0.0, 0.0]  # pylint: disable=duplicate-code
+    acceleration = [1.0, 0.0, 0.0]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
-            lambda parameter: 0.5
-            * (parameter ** 2)
-            * np.array(acceleration),  # pylint: disable=duplicate-code
-            lambda parameter: parameter
-            * np.array(acceleration),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                acceleration
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
+            lambda parameter: 0.5 * (parameter ** 2) * np.array(acceleration),
+            lambda parameter: parameter * np.array(acceleration),
+            lambda parameter: np.array(acceleration),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
         )
     )
 
@@ -1150,22 +952,14 @@ def test_constant_not_origin_curve_torsion() -> None:
     """Tests that a curve whose value is constant over the entire range
     of the parameter (which is defined for all reals) has torsion of 0.
     """
-    position = [1.61, -2.71, 3.14]  # pylint: disable=duplicate-code
+    position = [1.61, -2.71, 3.14]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
-            lambda parameter: np.array(
-                [position]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
+            lambda parameter: np.array([position]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
         )
     )
 
@@ -1181,21 +975,14 @@ def test_linear_off_axis_curve_torsion() -> None:
     the entire range of the parameter (which is defined for all reals)
     has torsion of 0.
     """
-    velocity = [1.61, -2.71, 3.14]  # pylint: disable=duplicate-code
+    velocity = [1.61, -2.71, 3.14]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
-            lambda parameter: parameter
-            * np.array(velocity),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                velocity
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
+            lambda parameter: parameter * np.array(velocity),
+            lambda parameter: np.array(velocity),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
         )
     )
 
@@ -1211,21 +998,14 @@ def test_quadratic_off_axis_curve_torsion() -> None:
     over the entire range of the parameter (which is defined for all
     reals) has torsion of 0.
     """
-    acceleration = [1.61, -2.71, 3.14]  # pylint: disable=duplicate-code
+    acceleration = [1.61, -2.71, 3.14]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
-            lambda parameter: 0.5
-            * (parameter ** 2)
-            * np.array(acceleration),  # pylint: disable=duplicate-code
-            lambda parameter: parameter
-            * np.array(acceleration),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                acceleration
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [0.0, 0.0, 0.0]
-            ),  # pylint: disable=duplicate-code
+            lambda parameter: 0.5 * (parameter ** 2) * np.array(acceleration),
+            lambda parameter: parameter * np.array(acceleration),
+            lambda parameter: np.array(acceleration),
+            lambda parameter: np.array([0.0, 0.0, 0.0]),
         )
     )
 
@@ -1238,17 +1018,17 @@ def test_quadratic_off_axis_curve_torsion() -> None:
 
 def test_non_linear_curve_torsion() -> None:
     """Test that a non-linear curve gives the correct torsion."""
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: np.array(
                 [np.cos(parameter), np.sin(parameter), parameter]
-            ),  # pylint: disable=duplicate-code
+            ),
             lambda parameter: np.array(
                 [-np.sin(parameter), np.cos(parameter), 1.0]
-            ),  # pylint: disable=duplicate-code
+            ),
             lambda parameter: np.array(
                 [-np.cos(parameter), -np.sin(parameter), 0.0]
-            ),  # pylint: disable=duplicate-code
+            ),
             lambda parameter: np.array(
                 [np.sin(parameter), -np.cos(parameter), 0.0]
             ),
@@ -1266,7 +1046,7 @@ def test_tschirnhausen_cubic() -> None:
     """Test that all the trihedral stuff works under a gauntlet of a
     cubic polynomial function.
     """
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: np.array(
                 [
@@ -1274,13 +1054,11 @@ def test_tschirnhausen_cubic() -> None:
                     parameter * (3 - parameter ** 2),
                     -parameter,
                 ]
-            ),  # pylint: disable=duplicate-code
+            ),
             lambda parameter: np.array(
                 [-2 * parameter, 3 - 3 * parameter ** 2, -1.0]
-            ),  # pylint: disable=duplicate-code
-            lambda parameter: np.array(
-                [-2, -6 * parameter, 0]
-            ),  # pylint: disable=duplicate-code
+            ),
+            lambda parameter: np.array([-2, -6 * parameter, 0]),
             lambda parameter: np.array([0, -6, 0]),
         )
     )

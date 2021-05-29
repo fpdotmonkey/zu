@@ -2,17 +2,17 @@
 Tests for curves where the beginning and end points are the same.
 """
 
-import logging  # pylint: disable=duplicate-code
+import logging
 
-import numpy as np  # pylint: disable=duplicate-code
+import numpy as np
 import pytest
 
-from zu.analytic_curve import AnalyticCurve  # pylint: disable=duplicate-code
+from zu.analytic_curve import AnalyticCurve
 
 
-npt = np.typing  # pylint: disable=duplicate-code
+npt = np.typing
 
-logging.getLogger().setLevel(logging.DEBUG)  # pylint: disable=duplicate-code
+logging.getLogger().setLevel(logging.DEBUG)
 
 
 def test_periodic_curve_with_no_defined_bounds() -> None:
@@ -20,7 +20,7 @@ def test_periodic_curve_with_no_defined_bounds() -> None:
     a ValueError should be raised.
     """
     with pytest.raises(ValueError):
-        AnalyticCurve(  # pylint: disable=duplicate-code
+        AnalyticCurve(
             (
                 lambda parameter: np.array([0, 0, 0]),
                 lambda parameter: np.array([0, 0, 0]),
@@ -36,7 +36,7 @@ def test_periodic_curve_with_infinite_bounds() -> None:
     infinity, a ValueError should be raised.
     """
     with pytest.raises(ValueError):
-        AnalyticCurve(  # pylint: disable=duplicate-code
+        AnalyticCurve(
             (
                 lambda parameter: np.array([0, 0, 0]),
                 lambda parameter: np.array([0, 0, 0]),
@@ -48,7 +48,7 @@ def test_periodic_curve_with_infinite_bounds() -> None:
         )
 
     with pytest.raises(ValueError):
-        AnalyticCurve(  # pylint: disable=duplicate-code
+        AnalyticCurve(
             (
                 lambda parameter: np.array([0, 0, 0]),
                 lambda parameter: np.array([0, 0, 0]),
@@ -60,7 +60,7 @@ def test_periodic_curve_with_infinite_bounds() -> None:
         )
 
     with pytest.raises(ValueError):
-        AnalyticCurve(  # pylint: disable=duplicate-code
+        AnalyticCurve(
             (
                 lambda parameter: np.array([0, 0, 0]),
                 lambda parameter: np.array([0, 0, 0]),
@@ -74,7 +74,7 @@ def test_periodic_curve_with_infinite_bounds() -> None:
 
 def test_aperiodic_curve() -> None:
     """A curve with `periodic=False` should behave like normal."""
-    AnalyticCurve(  # pylint: disable=duplicate-code
+    AnalyticCurve(
         (
             lambda parameter: np.array([0, 0, 0]),
             lambda parameter: np.array([0, 0, 0]),
@@ -92,7 +92,7 @@ def test_periodic_line() -> None:
     """
     velocity = [1.0, 0.0, 0.0]
 
-    curve = AnalyticCurve(  # pylint: disable=duplicate-code
+    curve = AnalyticCurve(
         (
             lambda parameter: parameter * np.array(velocity),
             lambda parameter: np.array(velocity),
@@ -118,7 +118,7 @@ def test_verify_cyclic_closed() -> None:
     with pytest.raises(ValueError):
         # a straight line is not cyclic closed in uncurved space
         velocity = [1, 0, 0]
-        AnalyticCurve(  # pylint: disable=duplicate-code
+        AnalyticCurve(
             (
                 lambda parameter: parameter * np.array(velocity),
                 lambda parameter: np.array(velocity),
@@ -131,7 +131,7 @@ def test_verify_cyclic_closed() -> None:
         )
 
     # one period of a circle is periodic closed
-    AnalyticCurve(  # pylint: disable=duplicate-code
+    AnalyticCurve(
         (
             lambda parameter: np.array(
                 [np.cos(parameter), np.sin(parameter), 0.0]
@@ -157,7 +157,7 @@ def test_cyclic_closed_only_if_periodic() -> None:
     should be raised.
     """
     with pytest.raises(ValueError):
-        AnalyticCurve(  # pylint: disable=duplicate-code
+        AnalyticCurve(
             (
                 lambda parameter: np.array(
                     [np.cos(parameter), np.sin(parameter), 0.0]
